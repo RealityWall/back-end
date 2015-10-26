@@ -1,11 +1,27 @@
 {
-  "name"         : "realityWall",
-  "version"      : "0.0.1",
-  "description"  : "freedom of expression",
-  "main"         : "server.js",
-  "author"       : "Väshnak",
-  "dependencies" : {
+  "name": "reality-wall-back-end",
+  "version": "0.0.1",
+  "description": "freedom of expression",
+  "main": "server.js",
+  "author": "Väshnak",
+  "dependencies": {
     "body-parser": "latest",
-    "express"    : "latest"
-  }
+    "express": "latest"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "mocha test/ > test-reports.txt"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RealityWall/back-end"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RealityWall/back-end/issues"
+  },
+  "homepage": "https://github.com/RealityWall/back-end"
 }
