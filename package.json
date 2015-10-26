@@ -1,0 +1,11 @@
+{
+  "name"         : "realityWall",
+  "version"      : "0.0.1",
+  "description"  : "freedom of expression",
+  "main"         : "server.js",
+  "author"       : "Väshnak",
+  "dependencies" : {
+    "body-parser": "latest",
+    "express"    : "latest"
+  }
+}
