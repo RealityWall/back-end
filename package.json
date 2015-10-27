@@ -6,7 +6,8 @@
   "author": "Väshnak",
   "dependencies": {
     "body-parser": "latest",
-    "express": "latest"
+    "express": "latest",
+    "istanbul": "latest"
   },
   "scripts": {
     "start": "node server.js",
@@ -18,6 +19,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/RealityWall/back-end"
+  },
+  "config": {
+    "blanket": {
+      "pattern": "app",
+      "data-cover-never": "node_modules"
+    }
   },
   "license": "ISC",
   "bugs": {
