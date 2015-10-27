@@ -1,0 +1,29 @@
+API v1 :
+
+    GET /users/:id
+    GET /users/:id/flux?limit=xxx&offset=yyy
+    POST /users {firstname, lastname, mail, password}
+    PUT /users/:id                                      Require User Auth
+
+    GET /session/:id
+    POST /session {mail, password}
+
+    GET /walls/:id
+    GET /walls/:id/rank?limit=xxx&offset=yyy
+
+    GET /posts/:id
+
+    POST /posts/:id? {title?, content}                  Require User Auth
+
+    PUT /posts/:id/like                                 Require User Auth
+    PUT /posts/:id/dislike                              Require User Auth
+
+API v2 :
+    nothing change, we juste put pub into the GET /walls/:id
+
+API v3 :
+    nothing change
+
+API v4 :
+
+    GET /wall/:id/new (new classement)                  Require Admin Auth
