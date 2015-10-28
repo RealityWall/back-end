@@ -1,34 +1,24 @@
 {
-  "name": "reality-wall-back-end",
+  "name": "Reality-Wall-Back-End",
   "version": "0.0.1",
-  "description": "freedom of expression",
-  "main": "server.js",
-  "author": "Väshnak",
-  "dependencies": {
-    "body-parser": "latest",
-    "express": "latest",
-    "istanbul": "latest"
-  },
+  "description": "back end of the reality wall app",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "mocha test/ > test-reports.txt"
-  },
-  "directories": {
-    "test": "test"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/RealityWall/back-end"
   },
-  "config": {
-    "blanket": {
-      "pattern": "app",
-      "data-cover-never": "node_modules"
-    }
-  },
+  "author": "Jean-Yves DELMOTTE",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/RealityWall/back-end/issues"
   },
-  "homepage": "https://github.com/RealityWall/back-end"
+  "homepage": "https://github.com/RealityWall/back-end",
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3",
+    "pg": "^4.4.3"
+  }
 }

@@ -22,12 +22,12 @@ CREATE TABLE users (
 	id SERIAL PRIMARY KEY,
 	email varchar(255) NOT NULL UNIQUE,
 	password text NOT NULL,
-	nickname varchar(255) DEFAULT NULL, -- TODO define limit
 	firstname text NOT NULL,
 	lastname text NOT NULL,
-	date_of_birth timestamp NOT NULL, -- date format ?
+	-- date_of_birth timestamp NOT NULL, -- date format ? in a next version
 	created_at timestamp NOT NULL,
-	updated_at timestamp NOT NULL
+	updated_at timestamp NOT NULL,
+	sessionId text DEFAULT NULL
 
 );
 
