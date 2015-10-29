@@ -1,21 +1,27 @@
 var db = require('../database');
+var callback = require('../callback');
 
 module.exports = function (req, res, next) {
 
-    // TODO : déterminer quelles urls doivent être protégés
-
-    /*db.connect(function success (client, done) {
-        client.sqlQuery('SELECT * FROM users WHERE sessionId=$1;', [req.headers.sessionId], function success (users) {
-            done();
-
-            if (users.rows.length == 1) {
-                next();
-            } else {
-                return res.status(403).end();
+    /*if (req.url.indexOf('/sessions') && req.method == 'PUT') {
+        var newRes = {
+            status: function (code) {
+                if (code == 200) {
+                    return newRes;
+                } else {
+                    res.status(403).end();
+                    return newRes;
+                }
+            },
+            json: function (data) {
+                if (data.session_id) {
+                    req.user = data;
+                    next();
+                }
             }
-
-        }, function error (err) { errorCB(err, res); });
-    }, function error (err) { errorCB(err, res); });*/
+        };
+        callback.getSessions(req, newRes);
+    }*/
 
     next();
 

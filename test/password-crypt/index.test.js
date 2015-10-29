@@ -1,9 +1,9 @@
-import bcrypt from "../modules/password-crypt";
-import assertfrom 'assert';
+var bcrypt = require("../../modules/password-crypt");
+var assert = require('assert');
 
 describe ('Callback Test', function () {
-	let password = "best_password_ever",
-		cryptedPassword = "";
+	var password = "best_password_ever";
+	var cryptedPassword = "";
 
 	it('Should generate a password', function(done){
 		cryptedPassword = bcrypt.generate(password);
