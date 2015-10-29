@@ -7,8 +7,12 @@ module.exports = function (router) {
 
     router.get('/hello', callback.sayHello);
 
-    rouget.get('/user/:id', callback.getUser);
-    
+    //recup d'un user en fonction de son id
+    rouget.get('/users/:id', callback.getUser);
+
+    //inscription d'un utilisateur
+    router.post('/users', callback.newUser);
+
     return router;
 
 };

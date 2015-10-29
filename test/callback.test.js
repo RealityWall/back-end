@@ -24,4 +24,26 @@ describe ('Callback Test', function () {
         };
         callback.getUser({params:{id:3}}, res);
     });
+
+
+    //penser à ajouter une ligne pour supprimer : "delete from users where firstname='jean-jacque';"
+    it ('Should add a new user', function (done) {
+        var req = {
+            body: 
+            {
+                email: "jeanjacquegoldman@gmail.com",
+                password: "password",
+                firstname: "jean-jacque",
+                lastname: "goldman"
+            }
+        }
+        var res = {
+            status: function() {return res;},
+            json: function (data) {
+                assert.equal(1, data.rowCount);
+                done();
+            }
+        };
+        callback.newUser(req, res);
+    });
 });

@@ -1,7 +1,7 @@
 API v1 :
 
     GET /users/:id
-    GET /users/:id/flux?limit=xxx&offset=yyy
+    done : GET /users/:id/flux?limit=xxx&offset=yyy
     POST /users {firstname, lastname, mail, password}
     PUT /users/:id                                      Require User Auth
 
