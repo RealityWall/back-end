@@ -18,7 +18,6 @@ CREATE TABLE walls (
 );
 
 CREATE TABLE users (
-
 	id SERIAL PRIMARY KEY,
 	email varchar(255) NOT NULL UNIQUE,
 	password text NOT NULL,
@@ -28,8 +27,13 @@ CREATE TABLE users (
 	created_at timestamp NOT NULL,
 	updated_at timestamp NOT NULL,
 	sessionId text DEFAULT NULL
-
 );
+
+INSERT INTO users (email, password, firstname, lastname, created_at, updated_at) VALUES 
+('Sarko@pognon.gold', 'givemecash', 'Nico', 'Sarko', current_timestamp, current_timestamp),
+('JohnyHaliday@optic.2000', 'raybansuxx', 'Johny', 'Haliday', current_timestamp, current_timestamp),
+('SebRoxxorXV@rugby.fr', 'TAMPON', 'Seb', 'Chabal', current_timestamp, current_timestamp),
+('xXShadowDarkKillerXx@hotmail.fr', 'azerty123', 'Kevin', 'Dugland', current_timestamp, current_timestamp);
 
 CREATE TABLE posts (
 

@@ -12,7 +12,7 @@ module.exports = {
     connect: function (successCB, errorCB) {
         pg.connect(connectionString, function (err, client, done) {
             if (err) {
-                logger('PG CONNECT ERROR : ', err);
+                logger.error('PG CONNECT ERROR : ', err);
                 done(err);
                 return errorCB(err);
             }
@@ -20,7 +20,7 @@ module.exports = {
             client.sqlQuery = function (request, params, successCB, errorCB) {
                 client.query(request, params, function (err, data) {
                     if (err) {
-                        logger('SQL Error : ', request, err);
+                        logger.error('SQL Error : ', request, err);
                         done(err);
                         return errorCB(err);
                     }

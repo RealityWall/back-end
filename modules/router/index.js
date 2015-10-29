@@ -7,6 +7,8 @@ module.exports = function (router) {
 
     router.get('/hello', callback.sayHello);
 
+    rouget.get('/user/:id', callback.getUser);
+    
     return router;
 
 };

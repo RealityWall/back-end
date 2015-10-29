@@ -1,7 +1,7 @@
 // some viariable to initialize the server
 var express = require('express');
 var app = express();
-
+var logger = require('./modules/logger');
 
 // create the router with the bdd uniq instance
 var router = require('./modules/router')(express.Router());
@@ -23,7 +23,7 @@ app.use(function (req, res, next) {
 // apply router to our app
 app.use('/',router);
 
-console.log("Server Launched on port 1111...");
+logger.info("Server Launched on port 1111...");
 
 // listen on port 1111
 app.listen(1111);
