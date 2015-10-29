@@ -31,7 +31,7 @@ module.exports = {
         }, function error (err) { errorCB(err, res); });
     },
 
-    newUser: function(req, res){
+    newUser: function(req, res) {
         db.connect(function success (client, done) {
             client
                 .sqlQuery(
@@ -40,6 +40,7 @@ module.exports = {
                     + 'RETURNING *;',
                     [req.body.email, req.body.password, req.body.firstname, req.body.lastname])
                 .then(function success (result) {
+                    // TODO : mail de bienvenue
                     done();
                     return res.status(201).json(result);
                 })
