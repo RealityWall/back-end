@@ -1,13 +1,14 @@
 var pg = require('pg');
-var logger = require('../logger')
+var logger = require('../logger');
 
 var connectionString = "postgres://postgres:password@localhost/postgres";
 
 module.exports = {
+
     /**
-     * Params of the callback :
-     * err, client, done
-     * @param successCB, errorCB
+     * Connect to PG DataBase
+     * @param successCB
+     * @param errorCB
      */
     connect: function (successCB, errorCB) {
         pg.connect(connectionString, function (err, client, done) {
@@ -17,16 +18,24 @@ module.exports = {
                 return errorCB(err);
             }
 
-            client.sqlQuery = function (request, params, successCB, errorCB) {
-                client.query(request, params, function (err, data) {
-                    if (err) {
-                        logger.error('SQL Error : ', request, err);
-                        done(err);
-                        return errorCB(err);
-                    }
+            /**
+             * Custom SQL Query function using Promises
+             * @param request
+             * @param params
+             */
+            client.sqlQuery = function (request, params) {
+                return new Promise(function (resolve, reject) {
+                    client.query(request, params, function (err, data) {
+                        if (err) {
+                            logger.error('SQL Error : ', request, err);
+                            done(err);
+                            return reject(err);
+                        }
 
-                    successCB(data);
-                })
+                        resolve(data);
+                    })
+                });
+
             };
 
             successCB(client, done);
