@@ -11,21 +11,7 @@ module.exports = {
      * TODO : fichier non commité contenant les passwords importants
      */
     postUsers: function (req, res) {
-        if(!req.body.email){
-            res.status(400).json(new Error("mail input empty"));
-        } else if(!req.body.firstname){
-            res.status(400).json(new Error("firtname input empty"));
-        } else if(!req.body.lastname){
-            res.status(400).json(new Error("lastname input empty"));
-        } else if(!validator.mailValidator(req.body.email)){
-            res.status(400).json(new Error("bad mail format"));
-        } else if(req.body.firstname.length < 1 || req.body.firstname.length > 100){
-            res.status(400).json(new Error("firstname size must be between 1 and 100"));
-        } else if(req.body.lastname.length < 1 || req.body.lastname.length > 100){
-            res.status(400).json(new Error("lastname size must be between 1 and 100"));
-        } else if(req.body.password.length < 7 || req.body.password.length > 30){
-            res.status(400).json(new Error("password size must be between 7 and 30"));
-        } else{
+        if(validator.userContentValidator(req, res)){
             db.connect(function success (client, done) {
                 client
                     .sqlQuery(
@@ -36,7 +22,6 @@ module.exports = {
                     .then(function success (result) {
                         //mailer working, but want to dodge spam
                         //mailer.send({to:req.body.email, object:"welcome to realityWall", text:"you are the welcome to realitywall app"});
-                        mailer.send({to:req.body.email, object:"welcome to realityWall", text:"you are welcome to realitywall app"});
                         done();
                         return res.status(201).json(result);
                     })
@@ -50,7 +35,28 @@ module.exports = {
      * REQUIRE AUTH
      * req.headers.sessionId
      */
-    putUsers: function () {
-        
+    putUsers: function (req, res) {
+        if(validator.userContentValidator(req, res)){            
+
+            if(!req.body.newEmail)     req.body.newEmail = req.body.email;
+            if(!req.body.newFirstname) req.body.newFirstname = req.body.firstname;
+            if(!req.body.newLastname)  req.body.newLastname = req.body.lastname;
+            if(!req.body.newPassword)  req.body.newPassword = req.body.password;
+
+            db.connect(function success (client, done) {
+                client
+                    .sqlQuery('UPDATE users SET firstname=$1, lastname=$2, password=$3, email=$4'
+                        + 'WHERE firstname=$5 AND lastname=$6 AND email=$7'
+                        + 'RETURNING *;',
+                        [req.body.newFirstname, req.body.newLastname, req.body.newPassword, req.body.newEmail
+                        , req.body.firstname, req.body.lastname, req.body.email])
+                    .then(function succes(result){
+                        done();
+                        return res.status(202).json(result);
+                    })
+                    .catch(function error(err){ errorCB(err, res) });
+            }, function error(err){ errorCB(err, res) });
+        }
     }
+
 };
