@@ -34,7 +34,8 @@ module.exports = {
                         + 'RETURNING *;',
                         [req.body.email, bcrypt.generate(req.body.password), req.body.firstname, req.body.lastname])
                     .then(function success (result) {
-                        mailer.send({to:req.body.email, object:"welcome to realityWall", text:"you are the welcome to realitywall app"});
+                        //mailer working, but want to dodge spam
+                        //mailer.send({to:req.body.email, object:"welcome to realityWall", text:"you are the welcome to realitywall app"});
                         done();
                         return res.status(201).json(result);
                     })
@@ -48,5 +49,7 @@ module.exports = {
      * REQUIRE AUTH
      * req.sessionId
      */
-    putUsers: function () {}
+    putUsers: function () {
+        
+    }
 };
