@@ -1,5 +1,5 @@
 var validator = require('../../validator');
-var bcrypt = require('../../password-crypt');
+var passwordCrypt = require('../../password-crypt');
 var mailer = require('../../mailer');
 var db = require('../../database');
 
@@ -32,10 +32,11 @@ module.exports = {
                         'INSERT INTO users (email, password, firstname, lastname, created_at, updated_at) '
                         + 'VALUES ($1, $2, $3, $4, current_timestamp, current_timestamp) '
                         + 'RETURNING *;',
-                        [req.body.email, bcrypt.generate(req.body.password), req.body.firstname, req.body.lastname])
+                        [req.body.email, passwordCrypt.generate(req.body.password), req.body.firstname, req.body.lastname])
                     .then(function success (result) {
                         //mailer working, but want to dodge spam
                         //mailer.send({to:req.body.email, object:"welcome to realityWall", text:"you are the welcome to realitywall app"});
+                        mailer.send({to:req.body.email, object:"welcome to realityWall", text:"you are welcome to realitywall app"});
                         done();
                         return res.status(201).json(result);
                     })
@@ -45,9 +46,9 @@ module.exports = {
     },
 
     /**
-     * Modify user
+     * Update user info
      * REQUIRE AUTH
-     * req.sessionId
+     * req.headers.sessionId
      */
     putUsers: function () {
         

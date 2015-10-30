@@ -26,7 +26,7 @@ CREATE TABLE users (
 	-- date_of_birth timestamp NOT NULL, -- date format ? in a next version
 	created_at timestamp NOT NULL,
 	updated_at timestamp NOT NULL,
-	sessionId text DEFAULT NULL
+	session_id text DEFAULT NULL
 );
 
 CREATE TABLE posts (
