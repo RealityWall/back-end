@@ -28,4 +28,4 @@ build/Release
 node_modules
 test-reports.txt
 coverage
-
+.DS_STORE
