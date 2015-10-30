@@ -1,7 +1,7 @@
 var bcrypt = require("../../modules/password-crypt");
 var assert = require('assert');
 
-describe ('Callback Test', function () {
+describe ('Password Crypt Test', function () {
 	var password = "best_password_ever";
 	var cryptedPassword = "";
 

@@ -1,8 +1,8 @@
 var db = require('../database');
 var logger = require('../logger');
 
-var sessionsApi = require('../api-sessions');
-var usersApi = require('../api-users');
+var sessionsApi = require('./api-sessions');
+var usersApi = require('./api-users');
 
 module.exports = {
 

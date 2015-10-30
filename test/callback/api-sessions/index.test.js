@@ -1,9 +1,10 @@
 'use strict';
 
 var assert = require('assert');
-var db = require('../../../modules/database/index.js');
-var passwordCrypt = require('../../../modules/password-crypt/index.js');
-var sessionsApi = require('../../../modules/callback/api-sessions/index.js');
+var db = require('../../../modules/database');
+var passwordCrypt = require('../../../modules/password-crypt');
+var sessionsApi = require('../../../modules/callback/api-sessions');
+var authenticate = require('../../../modules/router/authenticate-middleware.js');
 
 describe('Api /Sessions Test', function () {
 
@@ -66,7 +67,11 @@ describe('Api /Sessions Test', function () {
                 done()
             }
         };
-        sessionsApi.putSessions({headers: {sessionId: user.sessionId}}, res);
+        var req = {headers: {sessionId: user.sessionId}, url:'/sessions', method: 'PUT'};
+        authenticate(req, res, function () {
+            sessionsApi.putSessions(req, res);
+        });
+
     });
 
     it ('Get on Sessions', function (done) {

@@ -3,7 +3,7 @@ var callback = require('../callback');
 
 module.exports = function (req, res, next) {
 
-    /*if (req.url.indexOf('/sessions') && req.method == 'PUT') {
+    if (req.url.indexOf('/sessions') == 0 && req.method == 'PUT') {
         var newRes = {
             status: function (code) {
                 if (code == 200) {
@@ -21,7 +21,7 @@ module.exports = function (req, res, next) {
             }
         };
         callback.getSessions(req, newRes);
-    }*/
+    }
 
     next();
 
