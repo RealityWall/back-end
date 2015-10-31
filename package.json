@@ -4,7 +4,7 @@
   "description": "back end of the reality wall app",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha ./test --recursive"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
     "mocha": "~2.3.3",
     "node-uuid": "^1.4.3",
     "nodemailer": "^1.8.0",
-    "pg": "^4.4.3"
+    "pg": "^4.4.3",
+    "jsonfile": "~2.2.3"
   }
 }
