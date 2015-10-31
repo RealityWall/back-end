@@ -26,6 +26,8 @@ describe('Api /Sessions Test', function () {
                     done();
                     beforeDone();
                 });
+        }, function (err) {
+            console.log(err);
         });
     });
 

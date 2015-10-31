@@ -6,12 +6,11 @@ var db = require('../../database');
 module.exports = {
     /**
      * Inscription user
-     * TODO : ENCRYPTER PASSWORD
      * TODO : envoyer mail bienvenue
      * TODO : fichier non commité contenant les passwords importants
      */
     postUsers: function (req, res) {
-        if(validator.userContentValidator(req, res)){
+        if(validator.userContentValidator(['email', 'password', 'firstname', 'lastname'], [], req, res)){
             db.connect(function success (client, done) {
                 client
                     .sqlQuery(
@@ -25,8 +24,8 @@ module.exports = {
                         done();
                         return res.status(201).json(result);
                     })
-                    .catch(function error (err) { errorCB(err, res); });
-            }, function error (err) { errorCB(err, res); });
+                    .catch(function error (err) { res.status(500).json(err); });
+            }, function error (err) { res.status(500).json(err); });
         }
     },
 
@@ -36,26 +35,52 @@ module.exports = {
      * req.headers.sessionId
      */
     putUsers: function (req, res) {
-        if(validator.userContentValidator(req, res)){            
 
-            if(!req.body.newEmail)     req.body.newEmail = req.body.email;
-            if(!req.body.newFirstname) req.body.newFirstname = req.body.firstname;
-            if(!req.body.newLastname)  req.body.newLastname = req.body.lastname;
-            if(!req.body.newPassword)  req.body.newPassword = req.body.password;
+        if(validator.userContentValidator([], ['email', 'password', 'firstname', 'lastname'], req, res)) {
+            var values = [];
+            var request = '';
+            var counter = 1;
 
-            db.connect(function success (client, done) {
-                client
-                    .sqlQuery('UPDATE users SET firstname=$1, lastname=$2, password=$3, email=$4'
-                        + 'WHERE firstname=$5 AND lastname=$6 AND email=$7'
-                        + 'RETURNING *;',
-                        [req.body.newFirstname, req.body.newLastname, req.body.newPassword, req.body.newEmail
-                        , req.body.firstname, req.body.lastname, req.body.email])
-                    .then(function succes(result){
-                        done();
-                        return res.status(202).json(result);
-                    })
-                    .catch(function error(err){ errorCB(err, res) });
-            }, function error(err){ errorCB(err, res) });
+            if(req.body.email) {
+                values.push(req.body.email);
+                request += 'email=$' + counter++ + ',';
+            }
+            if (req.body.firstname) {
+                values.push(req.body.firstname);
+                request += 'firstname=$' + counter++ + ',';
+            }
+            if (req.body.lastname) {
+                values.push(req.body.lastname);
+                request += 'lastname=$' + counter++ + ',';
+            }
+            if (req.body.password) {
+                values.push(req.body.password);
+                request += 'password=$' + counter++ + ',';
+            }
+
+            if (request.length > 0) {
+                // on ajoute l'id de l'utilisateur à la fin du tableau
+                values.push(req.user.id);
+                // on enlève la dernière virgule
+                request = request.substr(0, request.length - 1);
+                db.connect(function success (client, done) {
+                    client
+                        .sqlQuery(
+                            'UPDATE users SET ' + request + ' '
+                            + 'WHERE id=$' + counter++ + ' '
+                            + 'RETURNING *;',
+                            values
+                        ).then(function success (result){
+                            done();
+                            return res.status(200).json(result);
+                        })
+                        .catch(function error(err){ res.status(500).json(err); });
+                }, function error(err){ res.status(500).json(err); });
+            } else {
+                // empty put request
+                return res.status(200).end();
+            }
+
         }
     }
 

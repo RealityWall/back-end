@@ -20,7 +20,7 @@ module.exports = function (req, res, next) {
                 }
             }
         };
-        callback.getSessions(req, newRes);
+        return callback.getSessions(req, newRes);
     }
 
     next();
