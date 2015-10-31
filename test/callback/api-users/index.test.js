@@ -17,10 +17,24 @@ describe ('Api-users tests', function () {
 	after(function (doneAfter) {
         db.connect(function success (client, done) {
             client
-                .sqlQuery('DELETE FROM users WHERE email=$1;', [user.email])
+                .sqlQuery('DELETE FROM users WHERE email=$1 OR email=$2;', [user.email, "a@b.c"])
                 .then(function success () {
                     done();
                     doneAfter();
+                });
+        });
+    });
+
+    before(function (doneBefore) {
+        db.connect(function success (client, done) {
+            client
+                .sqlQuery('INSERT INTO users (email, password, firstname, lastname, created_at, updated_at) '
+                        + 'VALUES ($1, $2, $3, $4, current_timestamp, current_timestamp) '
+                        + 'RETURNING *;', ["a@b.c", "abc", "abc", "abc"])
+                .then(function success (data) {
+                	console.log(data.rows[0].id);
+                    done();
+                    doneBefore();
                 });
         });
     });

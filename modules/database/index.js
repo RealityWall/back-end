@@ -1,7 +1,10 @@
 var pg = require('pg');
 var logger = require('../logger');
+var jsonfile = require('jsonfile');
 
-var connectionString = "postgres://postgres:password@localhost/postgres";
+var passwords = jsonfile.readFileSync('passwords.json');
+
+var connectionString = "postgres://postgres:"+passwords.database+"@localhost/postgres";
 
 module.exports = {
 

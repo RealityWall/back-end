@@ -4,10 +4,30 @@ var mailer = require('../../mailer');
 var db = require('../../database');
 
 module.exports = {
+
+    /**
+     * Récupération d'un user
+     *
+     *
+     */
+    getUsers: function(req, res){
+        db.connect(function succes(client, done){
+            client
+                .sqlQuery(
+                    'SELECT * FROM users WHERE id=$1',
+                    [req.params.id])
+                .then(function success (result) {
+                    done();
+                    return res.status(200).json(result);
+                })
+                .catch(function error (err) { res.status(500).json(err); });
+        }, function error(err) { res.status(500),json({err}); });
+    },
+
     /**
      * Inscription user
-     * TODO : envoyer mail bienvenue
-     * TODO : fichier non commité contenant les passwords importants
+     * (FAIT) TODO : envoyer mail bienvenue
+     * (FAIT) TODO : fichier non commité contenant les passwords importants
      */
     postUsers: function (req, res) {
         if(validator.userContentValidator(['email', 'password', 'firstname', 'lastname'], [], req, res)){
@@ -43,7 +63,7 @@ module.exports = {
 
             if(req.body.email) {
                 values.push(req.body.email);
-                request += 'email=$' + counter++ + ',';
+                request += 'email=$' + counter++ +  ',';
             }
             if (req.body.firstname) {
                 values.push(req.body.firstname);

@@ -11,6 +11,7 @@ module.exports = {
     putSessions: sessionsApi.putSessions,
     deleteSessions: sessionsApi.deleteSessions,
 
+    getUsers: usersApi.getUsers,
     postUsers: usersApi.postUsers,
     putUsers: usersApi.putUsers
 
