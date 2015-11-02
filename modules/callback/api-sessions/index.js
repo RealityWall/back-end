@@ -1,5 +1,5 @@
-var db = require('../../database/index.js');
-var passwordCrypt = require('../../password-crypt/index.js');
+var db = require('../../database');
+var passwordCrypt = require('../../password-crypt');
 var uuid = require('node-uuid');
 
 module.exports = {

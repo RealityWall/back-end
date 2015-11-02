@@ -63,6 +63,56 @@ module.exports = {
             }
         }
 
+        if (required.indexOf('content') >= 0 || !req.body.content) {
+            res.status(400).json(new Error("content input empty"));
+            return false;
+        }
+
+        if (required.indexOf('wall_id') >= 0) {
+            if (!req.body.wall_id) {
+                res.status(400).json(new Error("wall_id input empty"));
+                return false;
+            } else if (!/^[0-9]+$/.test(req.body.wall_id)) {
+                res.status(400).json(new Error("wall_id must be integer"));
+                return false;
+            }
+        } else if (optional.indexOf('wall_id') >= 0) {
+            if (req.body.wall_id && !(/^[0-9]+$/.test(req.body.wall_id))) {
+                res.status(400).json(new Error("wall_id must be integer"));
+                return false;
+            }
+        }
+
+        if (required.indexOf('title') >= 0) {
+            if (!req.body.title) {
+                res.status(400).json(new Error("title input empty"));
+                return false;
+            } else if (req.body.title.length > 50) {
+                res.status(400).json(new Error("title too long"));
+                return false;
+            }
+        } else if (optional.indexOf(title) >= 0) {
+            if (req.body.title && req.body.title.length > 50) {
+                res.status(400).json(new Error("title too long"));
+                return false;
+            }
+        }
+
+        if (required.indexOf('post_id') >= 0) {
+            if (!req.body.post_id) {
+                res.status(400).json(new Error("post_id input empty"));
+                return false;
+            } else if (!/^[0-9]+$/.test(req.body.post_id)) {
+                res.status(400).json(new Error("post_id must be integer"));
+                return false;
+            }
+        } else if (optional.indexOf('post_id') >= 0) {
+            if (req.body.post_id && !(/^[0-9]+$/.test(req.body.post_id))) {
+                res.status(400).json(new Error("post_id must be integer"));
+                return false;
+            }
+        }
+
         return true;
 	}
 };
