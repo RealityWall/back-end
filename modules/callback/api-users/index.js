@@ -17,6 +17,10 @@ module.exports = {
                     'SELECT * FROM users WHERE id=$1',
                     [req.params.id])
                 .then(function success (result) {
+                    if(result.rowCount === 0){
+                        done();
+                        return res.status(404).json(new Error("ERROR : Not existing user"));
+                    }
                     done();
                     return res.status(200).json(result);
                 })

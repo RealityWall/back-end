@@ -14,6 +14,15 @@ describe ('Api-users tests', function () {
 	};
 	var sessionId = null;
 
+	//for get test
+	var userGet = {
+		email: "a@b.c",
+		firstname: "abcdefgh",
+		lastname: "ijklmnpo",
+		password: "azertyuiop",
+		id: null
+	}
+
 	after(function (doneAfter) {
         db.connect(function success (client, done) {
             client
@@ -30,9 +39,9 @@ describe ('Api-users tests', function () {
             client
                 .sqlQuery('INSERT INTO users (email, password, firstname, lastname, created_at, updated_at) '
                         + 'VALUES ($1, $2, $3, $4, current_timestamp, current_timestamp) '
-                        + 'RETURNING *;', ["a@b.c", "abc", "abc", "abc"])
+                        + 'RETURNING *;', [userGet.email, userGet.password, userGet.firstname, userGet.lastname])
                 .then(function success (data) {
-                	console.log(data.rows[0].id);
+                	userGet.id = data.rows[0].id;
                     done();
                     doneBefore();
                 });
@@ -329,18 +338,56 @@ describe ('Api-users tests', function () {
 					assert.equal(1, data.rowCount);
 					assert.equal('bonjour', data.rows[0].firstname);
 					assert.equal('goooorge', data.rows[0].lastname);
-					assert.equal('cocksucker please"', data.rows[0].password);
+					assert.equal('gorge please"', data.rows[0].password);
 					done();
 				}
 			};
 			var req = { headers: {sessionId: sessionId}, body: {
 				firstname: 'bonjour',
 				lastname: 'goooorge',
-				password: 'cocksucker please"'
+				password: 'gorge please"'
 			}, url: '/sessions', method: 'PUT'};
 			authenticate(req, {}, function () {
 				users.putUsers(req, res);
 			});
+		});
+	});
+
+	// PARTIE GET
+
+	describe('Get Users Test', function () {
+
+		it('Should get the user a@b.c', function(done) {
+
+			var res = {
+				status: function(code) {
+					assert.equal(code, 200);
+					return res;
+				},
+				json: function (data) {
+					assert.equal("abcdefgh", data.rows[0].firstname);
+					assert.equal("a@b.c", data.rows[0].email);
+					done();
+				}
+			};
+			var req = { params:{ id:userGet.id } };
+			users.getUsers(req, res);
+		});
+
+		it('Should not get a user : not existing id', function(done) {
+
+			var res = {
+				status: function(code) {
+					assert.equal(404, code);
+					return res;
+				},
+				json: function (data) {
+					assert.equal(data.message, "ERROR : Not existing user");
+					done();
+				}
+			};
+			var req = { params:{ id:-1 } };
+			users.getUsers(req, res);
 		});
 	});
 
