@@ -5,9 +5,11 @@ module.exports = function (router) {
 
     router.use(authenticate);
 
-    //inscription d'un utilisateur
+    router.get('/users', callback.getUsers);
     router.post('/users', callback.postUsers);
+    router.put('/users', callback.putUsers);
 
+    router.get('/sessions/:id', callback.getSessions);
     router.post('/sessions', callback.postSessions);
     router.put('/sessions', callback.putSessions);
 

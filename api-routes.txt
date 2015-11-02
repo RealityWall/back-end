@@ -1,12 +1,12 @@
 API v1 :
 
     GET /users/:id
-    done : GET /users/:id/flux?limit=xxx&offset=yyy
-    POST /users {firstname, lastname, mail, password}
-    PUT /users/:id                                      Require User Auth
+    GET /users/:id/flux?limit=xxx&offset=yyy
+    DONE : POST /users {firstname, lastname, mail, password}
+    DONE : PUT /users/:id                                      Require User Auth
 
-    PUT /session/:id
-    POST /session {mail, password}
+    DONE : PUT /session/:id
+    DONE : POST /session {mail, password}
 
     GET /walls/:id
     GET /walls/:id/rank?limit=xxx&offset=yyy
