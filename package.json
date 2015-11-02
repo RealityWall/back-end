@@ -21,10 +21,10 @@
     "body-parser": "^1.14.1",
     "colors": "~1.1.2",
     "express": "^4.13.3",
+    "jsonfile": "~2.2.3",
     "mocha": "~2.3.3",
     "node-uuid": "^1.4.3",
     "nodemailer": "^1.8.0",
-    "pg": "^4.4.3",
-    "jsonfile": "~2.2.3"
+    "pg": "^4.4.3"
   }
 }
