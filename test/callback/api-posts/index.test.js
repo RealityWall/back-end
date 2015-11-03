@@ -67,11 +67,11 @@ describe('Api /Posts Test', function () {
     after(function (afterDone) {
         db.connect(function (client, done) {
             client
-                .sqlQuery('DELETE FROM posts WHERE 1=1;')
+                .sqlQuery('DELETE FROM rates WHERE 1=1;')
                 .then(function () {
-                    return client
-                        .sqlQuery('DELETE FROM walls WHERE id=$1;',
-                        [wall.id]);
+                    return client.sqlQuery('DELETE FROM posts WHERE 1=1;');
+                }).then(function () {
+                    return client.sqlQuery('DELETE FROM walls WHERE id=$1;', [wall.id]);
                 }).then(function () {
                     return client.sqlQuery('DELETE FROM users WHERE email=$1;', [user.email]);
                 }).then(function () {
@@ -142,6 +142,38 @@ describe('Api /Posts Test', function () {
         var req = { headers: {sessionId: user.session_id}, body: post2, url: '/posts', method: 'POST'};
         authenticate(req, {}, function () {
             postsApi.postPosts(req, res);
+        });
+    });
+
+    it ('Should like the ROOT post', function (done) {
+        var res = {
+            status: function(code) {
+                assert.equal(code, 201);
+                return res;
+            },
+            end: function () {
+                done();
+            }
+        };
+        var req = { headers: {sessionId: user.session_id}, url: '/posts/' + post1.id + '/like', method: 'POST', params: {id: post1.id}};
+        authenticate(req, {}, function () {
+            postsApi.upOrDownPost(req, res);
+        });
+    });
+
+    it ('Should unlike the ROOT post', function (done) {
+        var res = {
+            status: function(code) {
+                assert.equal(code, 201);
+                return res;
+            },
+            end: function () {
+                done();
+            }
+        };
+        var req = { headers: {sessionId: user.session_id}, url: '/posts/' + post1.id + '/dislike', method: 'POST', params: {id: post1.id}};
+        authenticate(req, {}, function () {
+            postsApi.upOrDownPost(req, res);
         });
     });
 

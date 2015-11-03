@@ -30,7 +30,6 @@ module.exports = {
                 return new Promise(function (resolve, reject) {
                     client.query(request, params, function (err, data) {
                         if (err) {
-                            console.log(err);
                             logger.error('SQL Error : ', request, err);
                             done(err);
                             return reject(err);

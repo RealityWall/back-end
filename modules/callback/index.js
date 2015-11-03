@@ -16,6 +16,7 @@ module.exports = {
     postUsers: usersApi.postUsers,
     putUsers: usersApi.putUsers,
 
-    postPosts: postsApi.postPosts
+    postPosts: postsApi.postPosts,
+    upOrDownPost: postsApi.upOrDownPost
 
 };
