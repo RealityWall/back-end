@@ -63,7 +63,7 @@ module.exports = {
             }
         }
 
-        if (required.indexOf('content') >= 0 || !req.body.content) {
+        if (required.indexOf('content') >= 0 && !req.body.content) {
             res.status(400).json(new Error("content input empty"));
             return false;
         }
@@ -91,7 +91,7 @@ module.exports = {
                 res.status(400).json(new Error("title too long"));
                 return false;
             }
-        } else if (optional.indexOf(title) >= 0) {
+        } else if (optional.indexOf('title') >= 0) {
             if (req.body.title && req.body.title.length > 50) {
                 res.status(400).json(new Error("title too long"));
                 return false;

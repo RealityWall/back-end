@@ -4,7 +4,7 @@ describe('Api /Posts Test', function () {
 
     var post = {
 
-    }
+    };
 
     // TODO : before : créer user avec token + mur
     // TODO : after delete user + mur

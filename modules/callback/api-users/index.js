@@ -48,7 +48,7 @@ module.exports = {
                         done();
                         return res.status(201).json(result);
                     })
-                    .catch(function error (err) { res.status(500).json(err); });
+                    .catch(function error (err) { console.log(error);res.status(500).json(err); });
             }, function error (err) { res.status(500).json(err); });
         }
     },
