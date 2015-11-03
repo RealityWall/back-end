@@ -7,6 +7,7 @@ module.exports = function (req, res, next) {
         req.url.indexOf('/sessions') == 0
         || req.url.indexOf('/users') == 0 && req.method == 'GET'
         || req.url.indexOf('/users') == 0 && req.method == 'POST'
+        || req.url.indexOf('/posts') == 0 && req.method == 'POST'
     ) {
         var newRes = {
             status: function (code) {

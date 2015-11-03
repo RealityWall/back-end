@@ -13,7 +13,7 @@ API v1 :
 
     GET /posts/:id
 
-    POST /posts/:id? {title?, content, wallId}          Require User Auth
+    DONE : POST /posts {title?, content, wall_id, post_id?}          Require User Auth
 
     PUT /posts/:id/like                                 Require User Auth
     PUT /posts/:id/dislike                              Require User Auth

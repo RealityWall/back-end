@@ -13,6 +13,8 @@ module.exports = function (router) {
     router.post('/sessions', callback.postSessions);
     router.put('/sessions', callback.putSessions);
 
+    router.post('/posts', callback.postPosts);
+
     return router;
 
 };

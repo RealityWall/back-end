@@ -17,15 +17,15 @@ module.exports = {
                             'RETURNING *',
                             [req.body.title, req.body.content, req.user.id, req.body.wall_id, req.body.post_id]
                         ).then(function (data) {
-                                done();
-                                if (data.rows.length == 1) {
-                                    return res.status(200).json(data.rows[0]);
-                                } else {
-                                    return res.status(200).end();
-                                }
-                            })
-                            .catch(function (err) { res.status(500).json(err); });
-                    }, function error (err) { res.status(500).json(err); });
+                            done();
+                            if (data.rows.length == 1) {
+                                return res.status(201).json(data.rows[0]);
+                            } else {
+                                return res.status(201).end();
+                            }
+                        })
+                        .catch(function (err) { res.status(500).json(err); });
+                }, function error (err) { res.status(500).json(err); });
             }
         }
 
