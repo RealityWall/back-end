@@ -7,11 +7,9 @@ module.exports = {
 
     /**
      * Récupération d'un user
-     *
-     *
      */
     getUsers: function(req, res){
-        db.connect(function succes(client, done){
+        db.connect(function success(client, done){
             client
                 .sqlQuery(
                     'SELECT * FROM users WHERE id=$1',
