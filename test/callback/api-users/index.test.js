@@ -4,7 +4,7 @@ var assert = require('assert');
 var authenticate = require('../../../modules/router/authenticate-middleware.js');
 var sessionsApi = require('../../../modules/callback/api-sessions');
 
-describe ('Api-users tests', function () {
+describe ('Api /Users tests', function () {
 
 	var user = {
 		email: 'jeangorge@gmail.com',
@@ -21,7 +21,7 @@ describe ('Api-users tests', function () {
 		lastname: "ijklmnpo",
 		password: "azertyuiop",
 		id: null
-	}
+	};
 
 	after(function (doneAfter) {
         db.connect(function success (client, done) {

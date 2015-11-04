@@ -22,7 +22,7 @@ describe('Api /Sessions Test', function () {
                     'VALUES ($1, $2, $3, $4, current_timestamp, current_timestamp) RETURNING *;',
                     [user.email, cryptedPassword, 'toto', 'tata']
                 )
-                .then(function (data) {
+                .then(function () {
                     done();
                     beforeDone();
                 });

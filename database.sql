@@ -37,7 +37,7 @@ CREATE TABLE posts (
 	created_at timestamp NOT NULL,
 	user_id integer NOT NULL,
 	wall_id integer NOT NULL, -- (can be NULL if it is a comment)
-	post_id integer NOT NULL, -- (can be NULL e.g. this is a root post)
+	post_id integer DEFAULT NULL, -- (can be NULL e.g. this is a root post)
 
 	foreign key (post_id) references posts (id),
 	foreign key (user_id) references users (id),
