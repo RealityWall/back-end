@@ -57,7 +57,7 @@ describe ('Api /Users tests', function () {
 					return res;
 				},
 				json: function (data) {
-					assert.equal(1, data.rowCount);
+					assert.equal(user.email, data.email);
 
 					var res = {
 						status: function (code) {
