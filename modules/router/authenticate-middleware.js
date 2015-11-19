@@ -4,9 +4,9 @@ var callback = require('../callback');
 module.exports = function (req, res, next) {
 
     if (
-        (req.url.indexOf('/sessions') == 0)
+        (req.url.indexOf('/sessions') == 0 && (req.method == 'GET' || req.method == 'PUT') )
         || (req.url.indexOf('/users') == 0 && req.method == 'GET')
-        || (req.url.indexOf('/users') == 0 && req.method == 'POST')
+        || (req.url.indexOf('/users') == 0 && req.method == 'PUT')
         || (req.url.indexOf('/posts') == 0 && req.method == 'POST')
     ) {
         var newRes = {

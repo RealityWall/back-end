@@ -44,6 +44,8 @@ module.exports = {
                         //mailer working, but want to dodge spam
                         //mailer.send({to:req.body.email, object:"welcome to realityWall", text:"you are the welcome to realitywall app"});
                         done();
+                        result = result.rows && result.rows.length == 1 ? result.rows[0] : result;
+                        if (result.password) delete result.password;
                         return res.status(201).json(result);
                     })
                     .catch(function error (err) { console.log(error);res.status(500).json(err); });
