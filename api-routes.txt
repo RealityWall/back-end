@@ -9,9 +9,11 @@ API v1 :
     DONE : POST /session {mail, password}
 
     GET /walls/:id
-    GET /walls/:id/rank?limit=xxx&offset=yyy
+    GET /walls/:id/posts?limit=xxx&offset=yyy
 
     GET /posts/:id
+    GET /posts/:id/comments?limit=xxx&offset=yyy&order=zzz (order = time || rank)
+    POST /posts/id/comments
 
     DONE : POST /posts {title?, content, wall_id, post_id?}          Require User Auth
 

@@ -32,22 +32,45 @@ CREATE TABLE users (
 CREATE TABLE posts (
 
 	id SERIAL PRIMARY KEY,
-	title varchar(255) DEFAULT NULL, -- (can be NULL if it is a comment)
+	title varchar(255) DEFAULT NULL,
 	content text NOT NULL, -- (html with link and <br/>)
 	created_at timestamp NOT NULL,
 	user_id integer NOT NULL,
 	wall_id integer NOT NULL, -- (can be NULL if it is a comment)
-	post_id integer DEFAULT NULL, -- (can be NULL e.g. this is a root post)
 
-	foreign key (post_id) references posts (id),
 	foreign key (user_id) references users (id),
 	foreign key (wall_id) references walls (id)
 
 );
 
-CREATE TABLE rates (
+CREATE TABLE comments (
+
+	id SERIAL PRIMARY KEY,
+	content text NOT NULL, -- (html with link and <br/>)
+	created_at timestamp NOT NULL,
+	user_id integer NOT NULL,
+	post_id integer NOT NULL,
+
+	foreign key (user_id) references users (id),
+	foreign key (post_id) references posts (id)
+
+);
+
+CREATE TABLE posts_rates (
 
 	post_id integer NOT NULL,
+	user_id integer NOT NULL,
+	type boolean NOT NULL, -- true = + || false = -
+
+	primary key (post_id, user_id),
+	foreign key (post_id) references posts (id),
+	foreign key (user_id) references users (id)
+
+);
+
+CREATE TABLE comments_rates (
+
+	comment_id integer NOT NULL,
 	user_id integer NOT NULL,
 	type boolean NOT NULL, -- true = + || false = -
 
@@ -87,6 +110,15 @@ CREATE TABLE user_badges (
 	foreign key (badge_id) references badges (id),
 	foreign key (user_id) references users (id)
 
+);
+
+CREATE TABLE following (
+	user_id integer NOT NULL,
+	wall_id integer NOT NULL,
+
+	primary key (wall_id, user_id),
+	foreign key (wall_id) references walls (id),
+	foreign key (user_id) references users (id)
 );
 */
 
