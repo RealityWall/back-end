@@ -6,16 +6,14 @@ var postsApi = require('../../../modules/callback/api-posts');
 
 describe('Api /Posts Test', function () {
 
-    var post1 = {
+    var post = {
         content: 'this is a post content',
         title: 'bonjour les gens',
         wall_id: null
     };
 
-    var post2 = {
-        content: 'this is a post content',
-        wall_id: null,
-        post_id: null
+    var comment = {
+        content: 'this is a post content'
     };
 
     var user = {
@@ -53,8 +51,7 @@ describe('Api /Posts Test', function () {
                             [wall.longitude, wall.latitude, wall.address, wall.postal_code, wall.city]
                         );
                 }).then(function (data) {
-                    post1.wall_id = data.rows[0].id;
-                    post2.wall_id = data.rows[0].id;
+                    post.wall_id = data.rows[0].id;
                     wall.id = data.rows[0].id;
                     done();
                     beforeDone();
@@ -67,8 +64,12 @@ describe('Api /Posts Test', function () {
     after(function (afterDone) {
         db.connect(function (client, done) {
             client
-                .sqlQuery('DELETE FROM rates WHERE 1=1;')
+                .sqlQuery('DELETE FROM posts_rates WHERE 1=1;')
                 .then(function () {
+                    return client.sqlQuery('DELETE FROM comments_rates WHERE 1=1;');
+                }).then(function () {
+                    return client.sqlQuery('DELETE FROM comments WHERE 1=1;');
+                }).then(function () {
                     return client.sqlQuery('DELETE FROM posts WHERE 1=1;');
                 }).then(function () {
                     return client.sqlQuery('DELETE FROM walls WHERE id=$1;', [wall.id]);
@@ -83,69 +84,55 @@ describe('Api /Posts Test', function () {
         });
     });
 
-    // tester post avec title
-    // tester post avec title + post_id (must throw an error)
-    // tester post avec post_id
-
-    it ('Should post a ROOT post', function (done) {
+    it ('Should post a post', function (done) {
         var res = {
             status: function(code) {
                 assert.equal(code, 201);
                 return res;
             },
             json: function (data) {
-                post1.id = data.id;
-                post2.post_id = data.id;
+                post.id = data.id;
                 done();
             }
         };
-        var req = { headers: {sessionId: user.session_id}, body: post1, url: '/posts', method: 'POST'};
+        var req = { headers: {sessionId: user.session_id}, body: post, url: '/posts', method: 'POST'};
         authenticate(req, {}, function () {
             postsApi.postPosts(req, res);
         });
     });
 
-    it ('Should not post because title and post_id are present', function (done) {
+    it ('Should get the post', function (done) {
         var res = {
             status: function(code) {
-                assert.equal(code, 400);
+                assert.equal(code, 200);
                 return res;
             },
             json: function (data) {
-                post2.id = data.id;
-                assert.equal('cannot have a title and a post_id', data.message);
+                assert.equal(post.title, data.title);
                 done();
             }
         };
-        var req = { headers: {sessionId: user.session_id}, body: {
-            content: 'this is a post content',
-            title: 'bonjour les gens',
-            post_id: post1.id,
-            wall_id: wall.id
-        }, url: '/posts', method: 'POST'};
-        authenticate(req, {}, function () {
-            postsApi.postPosts(req, res);
-        });
+        postsApi.getPosts({ params: {id: post.id}, url: '/posts', method: 'GET'}, res);
     });
 
-    it ('Should post a comment to the ROOT post', function (done) {
+    it ('Should post a comment to the post', function (done) {
         var res = {
             status: function(code) {
                 assert.equal(code, 201);
                 return res;
             },
             json: function (data) {
-                post2.id = data.id;
+                comment.id = data.id;
                 done();
             }
         };
-        var req = { headers: {sessionId: user.session_id}, body: post2, url: '/posts', method: 'POST'};
+        var req = { headers: {sessionId: user.session_id}, body: comment, url: '/posts/' + post.id + '/comments', method: 'POST', params: {id: post.id}};
         authenticate(req, {}, function () {
-            postsApi.postPosts(req, res);
+            postsApi.postComments(req, res);
         });
     });
 
-    it ('Should like the ROOT post', function (done) {
+    it ('Should like the post', function (done) {
         var res = {
             status: function(code) {
                 assert.equal(code, 201);
@@ -155,13 +142,13 @@ describe('Api /Posts Test', function () {
                 done();
             }
         };
-        var req = { headers: {sessionId: user.session_id}, url: '/posts/' + post1.id + '/like', method: 'POST', params: {id: post1.id}};
+        var req = { headers: {sessionId: user.session_id}, url: '/posts/' + post.id + '/like', method: 'POST', params: {id: post.id}};
         authenticate(req, {}, function () {
             postsApi.upOrDownPost(req, res);
         });
     });
 
-    it ('Should unlike the ROOT post', function (done) {
+    it ('Should unlike the post', function (done) {
         var res = {
             status: function(code) {
                 assert.equal(code, 201);
@@ -171,9 +158,41 @@ describe('Api /Posts Test', function () {
                 done();
             }
         };
-        var req = { headers: {sessionId: user.session_id}, url: '/posts/' + post1.id + '/dislike', method: 'POST', params: {id: post1.id}};
+        var req = { headers: {sessionId: user.session_id}, url: '/posts/' + post.id + '/dislike', method: 'POST', params: {id: post.id}};
         authenticate(req, {}, function () {
             postsApi.upOrDownPost(req, res);
+        });
+    });
+
+    it('Should like a comment', function (done) {
+        var res = {
+            status: function(code) {
+                assert.equal(code, 201);
+                return res;
+            },
+            end: function () {
+                done();
+            }
+        };
+        var req = { headers: {sessionId: user.session_id}, url: '/comments/' + comment.id + '/like', method: 'POST', params: {id: comment.id}};
+        authenticate(req, {}, function () {
+            postsApi.upOrDownComment(req, res);
+        });
+    });
+
+    it('Should like a comment', function (done) {
+        var res = {
+            status: function(code) {
+                assert.equal(code, 201);
+                return res;
+            },
+            end: function () {
+                done();
+            }
+        };
+        var req = { headers: {sessionId: user.session_id}, url: '/comments/' + comment.id + '/dislike', method: 'POST', params: {id: comment.id}};
+        authenticate(req, {}, function () {
+            postsApi.upOrDownComment(req, res);
         });
     });
 

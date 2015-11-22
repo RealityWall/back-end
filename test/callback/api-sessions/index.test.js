@@ -100,7 +100,10 @@ describe('Api /Sessions Test', function () {
                 done()
             }
         };
-        sessionsApi.deleteSessions({headers: {sessionId: user.sessionId}}, res);
+        var req = {headers: {sessionId: user.sessionId}, url:'/sessions', method: 'DELETE'};
+        authenticate(req, res, function () {
+            sessionsApi.deleteSessions(req, res);
+        });
     });
 
     it ('Get on Sessions (again)', function (done) {

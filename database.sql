@@ -1,7 +1,7 @@
 -- postgres -D /usr/local/var/postgres/ # start the db
 -- psql realitywall # connect to the db
 -- ps aux | grep postgres # shut down the db
-DROP TABLE IF EXISTS walls, users, posts, rates /*, notifications, badges, user_badges*/;
+DROP TABLE IF EXISTS walls, users, posts, comments, rates /*, notifications, badges, user_badges*/;
 
 -- address format in database ?
 CREATE TABLE walls (
@@ -74,8 +74,8 @@ CREATE TABLE comments_rates (
 	user_id integer NOT NULL,
 	type boolean NOT NULL, -- true = + || false = -
 
-	primary key (post_id, user_id),
-	foreign key (post_id) references posts (id),
+	primary key (comment_id, user_id),
+	foreign key (comment_id) references comments (id),
 	foreign key (user_id) references users (id)
 
 );
@@ -120,6 +120,26 @@ CREATE TABLE following (
 	foreign key (wall_id) references walls (id),
 	foreign key (user_id) references users (id)
 );
+
+SELECT
+       p.id, p.title, p.content, p.created_at, p.user_id, p.wall_id,
+       coalesce(comments_count, 0) comments_count,
+       coalesce(rates_count, 0) rates_count,
+       SUM(comments_count + rates_count) as score
+FROM posts p
+LEFT JOIN
+    (SELECT c.post_id, count(1) comments_count
+     FROM comments c
+    GROUP BY c.post_id) as c
+ON c.post_id=p.id
+LEFT JOIN
+	(SELECT r.post_id, count(1) rates_count
+	 FROM posts_rates r
+	GROUP BY r.post_id) as r
+ON r.post_id=p.id
+GROUP BY p.id, comments_count, rates_count
+ORDER BY (score) DESC;
+
 */
 
 

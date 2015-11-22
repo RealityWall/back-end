@@ -4,6 +4,7 @@ var logger = require('../logger');
 var sessionsApi = require('./api-sessions');
 var usersApi = require('./api-users');
 var postsApi = require('./api-posts');
+var wallsApi = require('./api-walls');
 
 module.exports = {
 
@@ -16,7 +17,12 @@ module.exports = {
     postUsers: usersApi.postUsers,
     putUsers: usersApi.putUsers,
 
+    getPosts: postsApi.getPosts,
     postPosts: postsApi.postPosts,
-    upOrDownPost: postsApi.upOrDownPost
+    upOrDownPost: postsApi.upOrDownPost,
+    postComments: postsApi.postComments,
+    upOrDownComment: postsApi.upOrDownComment,
+
+    getWalls: wallsApi.getWalls
 
 };

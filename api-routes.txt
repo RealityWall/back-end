@@ -5,20 +5,30 @@ API v1 :
     DONE : POST /users {firstname, lastname, mail, password}
     DONE : PUT /users/:id                                      Require User Auth
 
-    DONE : PUT /session/:id
-    DONE : POST /session {mail, password}
+    GET /users/:id/posts
+    GET /users/:id/comments
 
-    GET /walls/:id
-    GET /walls/:id/posts?limit=xxx&offset=yyy
+    DONE : GET /sessions/:id                                     Require User Auth
+    DONE : PUT /sessions/:id                                     Require User Auth
+    DONE : POST /sessions {mail, password}
+    DONE : DELETE /sessions                                      Require User Auth
 
-    GET /posts/:id
+    DONE : GET /walls/:id
+    (MUST BE TESTED) GET /walls/:id/posts?limit=xxx&offset=yyy
+
+    DONE : GET /posts/:id
     GET /posts/:id/comments?limit=xxx&offset=yyy&order=zzz (order = time || rank)
-    POST /posts/id/comments
+    DONE : POST /posts/:id/comments                                     Require User Auth
+    DONE : POST /comments/:id/like                                      Require User Auth
+    DONE : POST /comments/:id/dislike                                   Require User Auth
 
     DONE : POST /posts {title?, content, wall_id, post_id?}          Require User Auth
 
     DONE : POST /posts/:id/like                                 Require User Auth
     DONE : POST /posts/:id/dislike                              Require User Auth
+
+    /quick-search?query=xxx
+    /search?query=xxx
 
 API v2 :
     nothing change, we just put pub into the GET /walls/:id

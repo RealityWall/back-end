@@ -12,10 +12,18 @@ module.exports = function (router) {
     router.get('/sessions/:id', callback.getSessions);
     router.post('/sessions', callback.postSessions);
     router.put('/sessions', callback.putSessions);
+    router.delete('/sessions', callback.deleteSessions);
 
+    router.get('/posts/:id', callback.getPosts);
     router.post('/posts', callback.postPosts);
     router.post('/posts/:id/like', callback.upOrDownPost);
     router.post('/posts/:id/dislike', callback.upOrDownPost);
+
+    router.post('/posts/:id/comments', callback.postComments);
+    router.post('/comments/:id/like', callback.upOrDownComment);
+    router.post('/comments/:id/dislike', callback.upOrDownComment);
+
+    router.get('/walls/:id', callback.getWalls);
 
     return router;
 

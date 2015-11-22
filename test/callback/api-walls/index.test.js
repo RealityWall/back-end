@@ -2,7 +2,7 @@ var assert = require('assert');
 var walls = require('../../../modules/callback/api-walls');
 var db = require('../../../modules/database');
 
-describe ('Api-walls tests', function () {
+describe ('Api /Walls tests', function () {
 
 	var wallId = null;
 
@@ -31,7 +31,6 @@ describe ('Api-walls tests', function () {
         });
     });
 
-
 	it('Should get the wall located at TEST_CITY', function(done) {
 		var res = {
 			status: function(code) {
@@ -39,8 +38,7 @@ describe ('Api-walls tests', function () {
 				return res;
 			},
 			json: function (data) {
-				assert.equal("TEST_CITY", data.rows[0].city);
-				assert.equal(1, data.rowCount);
+				assert.equal("TEST_CITY", data.city);
 				done();
 			}
 		};
@@ -49,20 +47,19 @@ describe ('Api-walls tests', function () {
 	});
 
 	it('Should not get the wall : not existing id', function(done) {
-
-			var res = {
-				status: function(code) {
-					assert.equal(404, code);
-					return res;
-				},
-				json: function (data) {
-					assert.equal(data.message, "ERROR : Not existing wall");
-					done();
-				}
-			};
-			var req = { params:{ id:-1 } };
-			walls.getWalls(req, res);
-		});
+		var res = {
+			status: function(code) {
+				assert.equal(404, code);
+				return res;
+			},
+			json: function (data) {
+				assert.equal(data.message, "ERROR : Not existing wall");
+				done();
+			}
+		};
+		var req = { params:{ id:-1 } };
+		walls.getWalls(req, res);
+	});
 
 
 });

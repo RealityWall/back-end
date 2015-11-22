@@ -95,7 +95,7 @@ module.exports = {
     deleteSessions: function (req, res) {
         db.connect(function (client, done) {
             client
-                .sqlQuery('UPDATE users SET session_id=$1 WHERE session_id=$2;', ['coucou', req.headers.sessionId])
+                .sqlQuery('UPDATE users SET session_id=NULL WHERE session_id=$1;', [req.user.session_id])
                 .then(function () {
                     done();
                     return res.status(204).end();
