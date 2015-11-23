@@ -12,8 +12,18 @@ describe('Api /Posts Test', function () {
         wall_id: null
     };
 
+    var post2 = {
+        content: 'this is a post content',
+        title: 'bonjour les gens',
+        wall_id: null
+    };
+
     var comment = {
         content: 'this is a post content'
+    };
+
+    var comment2 = {
+        content: 'this is a post content 2'
     };
 
     var user = {
@@ -52,6 +62,7 @@ describe('Api /Posts Test', function () {
                         );
                 }).then(function (data) {
                     post.wall_id = data.rows[0].id;
+                    post2.wall_id = data.rows[0].id;
                     wall.id = data.rows[0].id;
                     done();
                     beforeDone();
@@ -63,22 +74,17 @@ describe('Api /Posts Test', function () {
 
     after(function (afterDone) {
         db.connect(function (client, done) {
-            client
-                .sqlQuery('DELETE FROM posts_rates WHERE 1=1;')
-                .then(function () {
-                    return client.sqlQuery('DELETE FROM comments_rates WHERE 1=1;');
-                }).then(function () {
-                    return client.sqlQuery('DELETE FROM comments WHERE 1=1;');
-                }).then(function () {
-                    return client.sqlQuery('DELETE FROM posts WHERE 1=1;');
-                }).then(function () {
-                    return client.sqlQuery('DELETE FROM walls WHERE id=$1;', [wall.id]);
-                }).then(function () {
-                    return client.sqlQuery('DELETE FROM users WHERE email=$1;', [user.email]);
-                }).then(function () {
-                    done();
-                    afterDone();
-                });
+            Promise.all([
+                client.sqlQuery('DELETE FROM posts_rates WHERE 1=1;'),
+                client.sqlQuery('DELETE FROM comments_rates WHERE 1=1;'),
+                client.sqlQuery('DELETE FROM comments WHERE 1=1;'),
+                client.sqlQuery('DELETE FROM posts WHERE 1=1;'),
+                client.sqlQuery('DELETE FROM walls WHERE id=$1;', [wall.id]),
+                client.sqlQuery('DELETE FROM users WHERE email=$1;', [user.email])
+            ]).then(function () {
+                done();
+                afterDone();
+            });
         }, function (err) {
             console.log(err);
         });
@@ -96,6 +102,23 @@ describe('Api /Posts Test', function () {
             }
         };
         var req = { headers: {sessionId: user.session_id}, body: post, url: '/posts', method: 'POST'};
+        authenticate(req, {}, function () {
+            postsApi.postPosts(req, res);
+        });
+    });
+
+    it ('Should post post2', function (done) {
+        var res = {
+            status: function(code) {
+                assert.equal(code, 201);
+                return res;
+            },
+            json: function (data) {
+                post.id = data.id;
+                done();
+            }
+        };
+        var req = { headers: {sessionId: user.session_id}, body: post2, url: '/posts', method: 'POST'};
         authenticate(req, {}, function () {
             postsApi.postPosts(req, res);
         });
@@ -127,6 +150,23 @@ describe('Api /Posts Test', function () {
             }
         };
         var req = { headers: {sessionId: user.session_id}, body: comment, url: '/posts/' + post.id + '/comments', method: 'POST', params: {id: post.id}};
+        authenticate(req, {}, function () {
+            postsApi.postComments(req, res);
+        });
+    });
+
+    it ('Should post another comment to the post', function (done) {
+        var res = {
+            status: function(code) {
+                assert.equal(code, 201);
+                return res;
+            },
+            json: function (data) {
+                comment2.id = data.id;
+                done();
+            }
+        };
+        var req = { headers: {sessionId: user.session_id}, body: comment2, url: '/posts/' + post.id + '/comments', method: 'POST', params: {id: post.id}};
         authenticate(req, {}, function () {
             postsApi.postComments(req, res);
         });
@@ -195,5 +235,117 @@ describe('Api /Posts Test', function () {
             postsApi.upOrDownComment(req, res);
         });
     });
+
+    describe('get posts by wall id', function () {
+        it ('Should get the posts by wall id WITHOUT offset and limit', function (done) {
+            var res = {
+                status: function(code) {
+                    assert.equal(code, 200);
+                    return res;
+                },
+                json: function (posts) {
+                    assert.equal(2, posts.length);
+                    assert(posts[0].score > posts[1].score);
+                    assert.equal(3, posts[0].score);
+                    assert.equal(0, posts[1].score);
+                    done();
+                }
+            };
+            postsApi.getPostsByWallId({params: {id: wall.id}, query: {},  url: '/walls/' + wall.id + '/posts', method: 'GET'}, res);
+        });
+
+        it ('Should get the posts by wall id WITH limit WITHOUT offset', function (done) {
+            var res = {
+                status: function(code) {
+                    assert.equal(code, 200);
+                    return res;
+                },
+                json: function (posts) {
+                    assert.equal(1, posts.length);
+                    assert.equal(3, posts[0].score);
+                    done();
+                }
+            };
+            postsApi.getPostsByWallId({params: {id: wall.id}, query: {limit: 1},  url: '/walls/' + wall.id + '/posts', method: 'GET'}, res);
+        });
+
+        it ('Should get the posts by wall id WITH limit AND offset', function (done) {
+            var res = {
+                status: function(code) {
+                    assert.equal(code, 200);
+                    return res;
+                },
+                json: function (posts) {
+                    assert.equal(1, posts.length);
+                    assert.equal(0, posts[0].score);
+                    done();
+                }
+            };
+            postsApi.getPostsByWallId({params: {id: wall.id}, query: {limit: 1, offset: 1},  url: '/walls/' + wall.id + '/posts', method: 'GET'}, res);
+        });
+    });
+
+    describe('get comments by post id', function () {
+        it ('Should get the comments by post id WITHOUT offset and limit and order', function (done) {
+            var res = {
+                status: function(code) {
+                    assert.equal(code, 200);
+                    return res;
+                },
+                json: function (comments) {
+                    assert.equal(2, comments.length);
+                    assert.equal(1, comments[0].score);
+                    done();
+                }
+            };
+            postsApi.getCommentsByPostId({params: {id: post.id}, query: {},  url: '/posts/' + post.id + '/comments', method: 'GET'}, res);
+        });
+
+        it ('Should get the comments by post id WITHOUT offset and order WITH limit', function (done) {
+            var res = {
+                status: function(code) {
+                    assert.equal(code, 200);
+                    return res;
+                },
+                json: function (comments) {
+                    assert.equal(1, comments.length);
+                    assert.equal(1, comments[0].score);
+                    done();
+                }
+            };
+            postsApi.getCommentsByPostId({params: {id: post.id}, query: {limit: 1},  url: '/posts/' + post.id + '/comments', method: 'GET'}, res);
+        });
+
+        it ('Should get the comments by post id WITHOUT order WITH limit and offset', function (done) {
+            var res = {
+                status: function(code) {
+                    assert.equal(code, 200);
+                    return res;
+                },
+                json: function (comments) {
+                    assert.equal(1, comments.length);
+                    assert.equal(0, comments[0].score);
+                    done();
+                }
+            };
+            postsApi.getCommentsByPostId({params: {id: post.id}, query: {limit: 1, offset: 1},  url: '/posts/' + post.id + '/comments', method: 'GET'}, res);
+        });
+
+        it ('Should get the comments by post id WITH order and limit and offset', function (done) {
+            var res = {
+                status: function(code) {
+                    assert.equal(code, 200);
+                    return res;
+                },
+                json: function (comments) {
+                    assert.equal(2, comments.length);
+                    assert(new Date(comments[0].created_at) > new Date(comments[1].created_at));
+                    done();
+                }
+            };
+            postsApi.getCommentsByPostId({params: {id: post.id}, query: {order: 'time'},  url: '/posts/' + post.id + '/comments', method: 'GET'}, res);
+        });
+    });
+
 
 });

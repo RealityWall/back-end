@@ -129,37 +129,141 @@ module.exports = {
     },
 
     getPostsByWallId: function (req, res) {
-        // TODO : test
+        // TODO : Add comments_rates
+        // TODO : Test offset et limit
+        // TODO : TEST like dislike et nombre de commentaire
         db.connect(function success(client, done) {
+            var params = [req.params.id];
+            if (req.query.limit) params.push(req.query.limit);
+            if (req.query.offset) params.push(req.query.offset);
+
             client
                 .sqlQuery(
                     'SELECT p.id, p.title, p.content, p.created_at, p.user_id, p.wall_id, '
                     + 'coalesce(comments_count, 0) comments_count, '
-                    + 'coalesce(rates_count, 0) rates_count, '
-                    + 'SUM(comments_count + rates_count) as score '
+                    + 'coalesce(likes_count, 0) likes_count, '
+                    + 'coalesce(dislikes_count, 0) dislikes_count, '
+                    + 'SUM(coalesce(comments_count, 0) + coalesce(likes_count, 0) + coalesce(dislikes_count, 0)) as score '
                     + 'FROM posts p '
+
                     + 'LEFT JOIN '
                     + '(SELECT c.post_id, count(1) comments_count '
                     + 'FROM comments c '
                     + 'GROUP BY c.post_id) as c '
                     + 'ON c.post_id=p.id '
+
                     + 'LEFT JOIN '
-                    + '(SELECT r.post_id, count(1) rates_count '
+                    + '(SELECT r.post_id, count(1) likes_count '
                     + 'FROM posts_rates r '
-                    + 'GROUP BY r.post_id) as r '
-                    + 'ON r.post_id=p.id '
+                    + 'WHERE r.type=true '
+                    + 'GROUP BY r.post_id) as r1 '
+                    + 'ON r1.post_id=p.id '
+
+                    + 'LEFT JOIN '
+                    + '(SELECT r.post_id, count(1) dislikes_count '
+                    + 'FROM posts_rates r '
+                    + 'WHERE r.type=false '
+                    + 'GROUP BY r.post_id) as r2 '
+                    + 'ON r2.post_id=p.id '
+
                     + 'WHERE p.wall_id=$1 '
-                    + 'GROUP BY p.id, comments_count, rates_count '
+                    + 'GROUP BY p.id, comments_count, likes_count, dislikes_count '
                     + 'ORDER BY (score) DESC '
+
                     + (req.query.limit ? 'LIMIT $2 ' : '')
                     + (req.query.offset ? 'OFFSET $3 ' : '')
                     + ';',
-                    [req.params.id, req.query.limit, req.query.offset])
+                    params)
                 .then(function success (result) {
                     done();
                     return res.status(200).json(result.rows);
                 })
                 .catch(function error (err) { console.log(err); res.status(500).json(err); });
+        }, function error(err) { res.status(500).json(err); });
+    },
+
+    getCommentsByPostId: function (req, res) {
+        // TODO : test avec offset et limit
+        db.connect(function success(client, done) {
+            if (req.query.order && req.query.order == 'time') {
+                var params = [req.params.id];
+                if (req.query.limit) params.push(req.query.limit);
+                if (req.query.offset) params.push(req.query.offset);
+
+                client
+                    .sqlQuery(
+                        'SELECT c.id, c.content, c.created_at, c.user_id, c.post_id, '
+                        + 'coalesce(likes_count, 0) likes_count, '
+                        + 'coalesce(dislikes_count, 0) dislikes_count '
+                        + 'FROM comments c '
+
+                        + 'LEFT JOIN '
+                        + '(SELECT r.comment_id, count(1) likes_count '
+                        + 'FROM comments_rates r '
+                        + 'WHERE r.type=true '
+                        + 'GROUP BY r.comment_id) as r1 '
+                        + 'ON r1.comment_id=c.id '
+
+                        + 'LEFT JOIN '
+                        + '(SELECT r.comment_id, count(1) dislikes_count '
+                        + 'FROM comments_rates r '
+                        + 'WHERE r.type=false '
+                        + 'GROUP BY r.comment_id) as r2 '
+                        + 'ON r2.comment_id=c.id '
+
+                        + 'WHERE c.post_id=$1 '
+                        + 'ORDER BY (c.created_at) DESC '
+                        + (req.query.limit ? 'LIMIT $2 ' : '')
+                        + (req.query.offset ? 'OFFSET $3 ' : '')
+                        + ';',
+                        params
+                    ).then(function success (result) {
+                        done();
+                        return res.status(200).json(result.rows);
+                    })
+                    .catch(function error (err) { console.log(err); res.status(500).json(err); });
+            } else {
+                var params = [req.params.id];
+                if (req.query.limit) params.push(req.query.limit);
+                if (req.query.offset) params.push(req.query.offset);
+
+                client
+                    .sqlQuery(
+                        'SELECT c.id, c.content, c.created_at, c.user_id, c.post_id, '
+                        + 'coalesce(likes_count, 0) likes_count, '
+                        + 'coalesce(dislikes_count, 0) dislikes_count, '
+                        + 'SUM(coalesce(likes_count, 0) + coalesce(dislikes_count, 0)) as score '
+                        + 'FROM comments c '
+
+                        + 'LEFT JOIN '
+                        + '(SELECT r.comment_id, count(1) likes_count '
+                        + 'FROM comments_rates r '
+                        + 'WHERE r.type=true '
+                        + 'GROUP BY r.comment_id) as r1 '
+                        + 'ON r1.comment_id=c.id '
+
+                        + 'LEFT JOIN '
+                        + '(SELECT r.comment_id, count(1) dislikes_count '
+                        + 'FROM comments_rates r '
+                        + 'WHERE r.type=false '
+                        + 'GROUP BY r.comment_id) as r2 '
+                        + 'ON r2.comment_id=c.id '
+
+                        + 'WHERE c.post_id=$1 '
+                        + 'GROUP BY c.id, likes_count, dislikes_count '
+                        + 'ORDER BY (score) DESC '
+
+                        + (req.query.limit ? 'LIMIT $2 ' : '')
+                        + (req.query.offset ? 'OFFSET $3 ' : '')
+                        + ';',
+                        params
+                    ).then(function success (result) {
+                        done();
+                        return res.status(200).json(result.rows);
+                    })
+                    .catch(function error (err) { console.log(err); res.status(500).json(err); });
+            }
+
         }, function error(err) { res.status(500).json(err); });
     }
 

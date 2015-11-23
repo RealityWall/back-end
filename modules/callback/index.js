@@ -18,10 +18,14 @@ module.exports = {
     putUsers: usersApi.putUsers,
 
     getPosts: postsApi.getPosts,
+    getPostsByWallId: postsApi.getPostsByWallId,
     postPosts: postsApi.postPosts,
     upOrDownPost: postsApi.upOrDownPost,
     postComments: postsApi.postComments,
     upOrDownComment: postsApi.upOrDownComment,
+
+    getCommentsByPostId: postsApi.getCommentsByPostId,
+
 
     getWalls: wallsApi.getWalls
 

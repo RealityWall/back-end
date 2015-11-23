@@ -14,10 +14,10 @@ API v1 :
     DONE : DELETE /sessions                                      Require User Auth
 
     DONE : GET /walls/:id
-    (MUST BE TESTED) GET /walls/:id/posts?limit=xxx&offset=yyy
+    DONE : GET /walls/:id/posts?limit=xxx&offset=yyy
 
     DONE : GET /posts/:id
-    GET /posts/:id/comments?limit=xxx&offset=yyy&order=zzz (order = time || rank)
+    DONE : GET /posts/:id/comments?limit=xxx&offset=yyy&order=zzz (order = time || rank)
     DONE : POST /posts/:id/comments                                     Require User Auth
     DONE : POST /comments/:id/like                                      Require User Auth
     DONE : POST /comments/:id/dislike                                   Require User Auth

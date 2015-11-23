@@ -140,6 +140,30 @@ ON r.post_id=p.id
 GROUP BY p.id, comments_count, rates_count
 ORDER BY (score) DESC;
 
+
+
+SELECT
+	c.id, c.content, c.created_at, c.user_id, c.post_id,
+	coalesce(likes_count, 0) likes_count,
+	coalesce(dislikes_count, 0) dislikes_count,
+	SUM(coalesce(likes_count + dislikes_count, 0)) as score
+FROM comments c
+LEFT JOIN
+	(SELECT r.comment_id, COUNT(1) likes_count
+		FROM comments_rates r
+		WHERE r.type=true
+		GROUP BY r.comment_id) as r1
+	ON  r1.comment_id=c.id
+LEFT JOIN
+	(SELECT r.comment_id, COUNT(1) dislikes_count
+		FROM comments_rates r
+		WHERE r.type=false
+		GROUP BY r.comment_id) as r2
+	ON  r2.comment_id=c.id
+WHERE c.post_id=2
+GROUP BY c.id, likes_count, dislikes_count
+ORDER BY score DESC;
+
 */
 
 

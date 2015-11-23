@@ -19,11 +19,13 @@ module.exports = function (router) {
     router.post('/posts/:id/like', callback.upOrDownPost);
     router.post('/posts/:id/dislike', callback.upOrDownPost);
 
+    router.post('/posts/:id/comments', callback.getCommentsByPostId);
     router.post('/posts/:id/comments', callback.postComments);
     router.post('/comments/:id/like', callback.upOrDownComment);
     router.post('/comments/:id/dislike', callback.upOrDownComment);
 
     router.get('/walls/:id', callback.getWalls);
+    router.get('/walls/:id/posts', callback.getPostsByWallId);
 
     return router;
 
