@@ -12,7 +12,7 @@ module.exports = {
     getSessions: function (req, res) {
         db.connect(function (client, done) {
             client
-                .sqlQuery('SELECT * FROM users WHERE session_id=$1', [req.headers.sessionId])
+                .sqlQuery('SELECT * FROM users WHERE session_id=$1', [req.headers.id])
                 .then(function (data) {
                     done();
                     if (data.rows.length == 1) {

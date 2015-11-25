@@ -19,7 +19,7 @@ module.exports = function (router) {
     router.post('/posts/:id/like', callback.upOrDownPost);
     router.post('/posts/:id/dislike', callback.upOrDownPost);
 
-    router.post('/posts/:id/comments', callback.getCommentsByPostId);
+    router.get('/posts/:id/comments', callback.getCommentsByPostId);
     router.post('/posts/:id/comments', callback.postComments);
     router.post('/comments/:id/like', callback.upOrDownComment);
     router.post('/comments/:id/dislike', callback.upOrDownComment);

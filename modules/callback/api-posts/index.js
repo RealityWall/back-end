@@ -130,8 +130,6 @@ module.exports = {
 
     getPostsByWallId: function (req, res) {
         // TODO : Add comments_rates
-        // TODO : Test offset et limit
-        // TODO : TEST like dislike et nombre de commentaire
         db.connect(function success(client, done) {
             var params = [req.params.id];
             if (req.query.limit) params.push(req.query.limit);
@@ -139,7 +137,7 @@ module.exports = {
 
             client
                 .sqlQuery(
-                    'SELECT p.id, p.title, p.content, p.created_at, p.user_id, p.wall_id, '
+                    'SELECT p.id, p.title, p.content, p.created_at, p.user_id, p.wall_id, u.firstname, u.lastname, '
                     + 'coalesce(comments_count, 0) comments_count, '
                     + 'coalesce(likes_count, 0) likes_count, '
                     + 'coalesce(dislikes_count, 0) dislikes_count, '
@@ -166,8 +164,13 @@ module.exports = {
                     + 'GROUP BY r.post_id) as r2 '
                     + 'ON r2.post_id=p.id '
 
+                    + 'LEFT JOIN '
+                    + '(SELECT id as confirmation_id, firstname, lastname '
+                    + 'FROM users) as u '
+                    + 'ON u.confirmation_id=p.user_id '
+
                     + 'WHERE p.wall_id=$1 '
-                    + 'GROUP BY p.id, comments_count, likes_count, dislikes_count '
+                    + 'GROUP BY p.id, comments_count, likes_count, dislikes_count, u.firstname, u.lastname '
                     + 'ORDER BY (score) DESC '
 
                     + (req.query.limit ? 'LIMIT $2 ' : '')
@@ -183,7 +186,6 @@ module.exports = {
     },
 
     getCommentsByPostId: function (req, res) {
-        // TODO : test avec offset et limit
         db.connect(function success(client, done) {
             if (req.query.order && req.query.order == 'time') {
                 var params = [req.params.id];
@@ -192,7 +194,7 @@ module.exports = {
 
                 client
                     .sqlQuery(
-                        'SELECT c.id, c.content, c.created_at, c.user_id, c.post_id, '
+                        'SELECT c.id, c.content, c.created_at, c.user_id, c.post_id, u.firstname, u.lastname, '
                         + 'coalesce(likes_count, 0) likes_count, '
                         + 'coalesce(dislikes_count, 0) dislikes_count '
                         + 'FROM comments c '
@@ -210,6 +212,11 @@ module.exports = {
                         + 'WHERE r.type=false '
                         + 'GROUP BY r.comment_id) as r2 '
                         + 'ON r2.comment_id=c.id '
+
+                        + 'LEFT JOIN '
+                        + '(SELECT id as confirmation_id, firstname, lastname '
+                        + 'FROM users) as u '
+                        + 'ON u.confirmation_id=c.user_id '
 
                         + 'WHERE c.post_id=$1 '
                         + 'ORDER BY (c.created_at) DESC '
@@ -229,7 +236,7 @@ module.exports = {
 
                 client
                     .sqlQuery(
-                        'SELECT c.id, c.content, c.created_at, c.user_id, c.post_id, '
+                        'SELECT c.id, c.content, c.created_at, c.user_id, c.post_id, u.firstname, u.lastname, '
                         + 'coalesce(likes_count, 0) likes_count, '
                         + 'coalesce(dislikes_count, 0) dislikes_count, '
                         + 'SUM(coalesce(likes_count, 0) + coalesce(dislikes_count, 0)) as score '
@@ -249,8 +256,13 @@ module.exports = {
                         + 'GROUP BY r.comment_id) as r2 '
                         + 'ON r2.comment_id=c.id '
 
+                        + 'LEFT JOIN '
+                        + '(SELECT id as confirmation_id, firstname, lastname '
+                        + 'FROM users) as u '
+                        + 'ON u.confirmation_id=c.user_id '
+
                         + 'WHERE c.post_id=$1 '
-                        + 'GROUP BY c.id, likes_count, dislikes_count '
+                        + 'GROUP BY c.id, likes_count, dislikes_count, u.firstname, u.lastname '
                         + 'ORDER BY (score) DESC '
 
                         + (req.query.limit ? 'LIMIT $2 ' : '')

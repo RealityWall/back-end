@@ -246,6 +246,8 @@ describe('Api /Posts Test', function () {
                 json: function (posts) {
                     assert.equal(2, posts.length);
                     assert(posts[0].score > posts[1].score);
+                    assert.equal(user.firstname, posts[0].firstname);
+                    assert.equal(user.lastname, posts[0].lastname);
                     assert.equal(3, posts[0].score);
                     assert.equal(0, posts[1].score);
                     done();
@@ -295,6 +297,9 @@ describe('Api /Posts Test', function () {
                 json: function (comments) {
                     assert.equal(2, comments.length);
                     assert.equal(1, comments[0].score);
+                    assert.equal(user.firstname, comments[0].firstname);
+                    assert.equal(user.lastname, comments[0].lastname);
+                    assert.equal(user.id, comments[0].user_id);
                     done();
                 }
             };
@@ -339,7 +344,9 @@ describe('Api /Posts Test', function () {
                 },
                 json: function (comments) {
                     assert.equal(2, comments.length);
-                    assert(new Date(comments[0].created_at) > new Date(comments[1].created_at));
+                    assert.equal(user.firstname, comments[0].firstname);
+                    assert.equal(user.lastname, comments[0].lastname);
+                    assert(new Date(comments[0].created_at) >= new Date(comments[1].created_at));
                     done();
                 }
             };

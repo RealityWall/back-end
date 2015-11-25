@@ -29,6 +29,7 @@ CREATE TABLE users (
 	session_id text DEFAULT NULL
 );
 
+/* TODO : delete content */
 CREATE TABLE posts (
 
 	id SERIAL PRIMARY KEY,
@@ -163,6 +164,15 @@ LEFT JOIN
 WHERE c.post_id=2
 GROUP BY c.id, likes_count, dislikes_count
 ORDER BY score DESC;
+
+
+SELECT
+       p.id, p.title, p.content, p.created_at, p.user_id, p.wall_id, u.firstname
+FROM posts p
+LEFT JOIN
+    (SELECT id, firstname, lastname
+     FROM users) as u
+ON u.id=p.user_id
 
 */
 
