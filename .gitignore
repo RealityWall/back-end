@@ -29,3 +29,4 @@ node_modules
 test-reports.txt
 coverage
 .DS_STORE
+passwords.txt

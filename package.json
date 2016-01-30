@@ -4,13 +4,13 @@
   "description": "back end of the reality wall app",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha ./test --recursive"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/RealityWall/back-end"
   },
-  "author": "Jean-Yves DELMOTTE",
+  "author": "Jean-Yves DELMOTTE, Anthony SARAÏS",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/RealityWall/back-end/issues"
