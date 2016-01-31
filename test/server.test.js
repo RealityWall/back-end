@@ -16,6 +16,13 @@ describe('Server API Test', () => {
     };
     let newPassword = 'newPassword';
 
+    let userNotVerified = {
+        email: 'test@test.com',
+        password: 'password',
+        firstname: 'omg',
+        lastname: 'wtf'
+    };
+
     before( (done) => {
         buildServer( (_server) => {
             server = _server;
@@ -28,16 +35,39 @@ describe('Server API Test', () => {
             .User
             .destroy({
                 where: {
-                    email: user.email
+                    $or: [
+                        {email: user.email},
+                        {email: userNotVerified.email}
+                    ]
                 }
             })
             .then( (numberDestroyed) => {
-                assert.equal(1, numberDestroyed);
+                assert.equal(2, numberDestroyed);
                 server.close(done);
             });
     });
 
     describe('POST /users', () => {
+
+        after( (done) => {
+            request(server)
+                .post('/api/users')
+                .send(userNotVerified)
+                .set('Accept', 'application/json')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(201, res.status);
+
+                    // memorize user data
+                    let userPassword = userNotVerified.password;
+                    userNotVerified = res.body;
+                    userNotVerified.password = userPassword;
+
+                    done();
+                });
+        });
 
         it('Should create a new user', (done) => {
             request(server)
@@ -191,13 +221,46 @@ describe('Server API Test', () => {
                         .send({email: user.email})
                         .set('Accept', 'application/json')
                         .end( () => {
-                            done();
+                            // create one again
+                            request(server)
+                                .post('/api/users/forgot-password')
+                                .send({email: user.email})
+                                .set('Accept', 'application/json')
+                                .end( () => {
+                                    done();
+                                });
                         });
                 });
         });
 
-        // TODO : Test with a user that is not verified
-        // TODO : Test with a wrong email (404)
+        it ('Should NOT send a forget password request because email does not exists', (done) => {
+            request(server)
+                .post('/api/users/forgot-password')
+                .send({email: user.email + 'a'})
+                .set('Accept', 'application/json')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(404, res.status);
+
+                    done();
+                });
+        });
+
+        it ('Should NOT send a forget password request because user is NOT VERIFIED', (done) => {
+            request(server)
+                .post('/api/users/forgot-password')
+                .send({email: userNotVerified.email})
+                .set('Accept', 'application/json')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(401, res.status);
+                    done();
+                });
+        });
 
     });
 
@@ -226,11 +289,48 @@ describe('Server API Test', () => {
                 });
         });
 
-        // TODO : test with 404 token
+        it('Should not delete because token NOT EXISTS', (done) => {
+            request(server)
+                .del('/api/users/reset-password/' + 'coucou')
+                .set('Accept', 'application/json')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(404, res.status);
+
+                    done();
+                });
+        });
 
     });
 
     describe('POST /users/reset-password/:token', () => {
+
+        it('Should not update the password because NO PASSWORD given', (done) => {
+            models
+                .ResetPasswordToken
+                .findOne({
+                    where: {
+                        UserId: user.id
+                    }
+                })
+                .then( (resetPasswordTokenInstance) => {
+                    request(server)
+                        .post('/api/users/reset-password/' + resetPasswordTokenInstance.token)
+                        .set('Accept', 'application/json')
+                        .end( (err, res) => {
+
+                            if (err) throw err;
+
+                            // check for good response
+                            assert.equal(400, res.status);
+
+                            done();
+
+                        });
+                });
+        });
 
         it('Should update the password of the user', (done) => {
             models
@@ -252,15 +352,66 @@ describe('Server API Test', () => {
                             assert.equal(201, res.status);
                             user.password = newPassword;
 
-                            done();
+                            // check that the previous session has been deleted
+                            models
+                                .Session
+                                .findOne({
+                                    where: {
+                                        UserId: user.id
+                                    }
+                                })
+                                .then( (sessionInstance) => {
+                                    assert.equal(null, sessionInstance);
+
+                                    // check taht all reset password token (2) has been deleted
+                                    models
+                                        .ResetPasswordToken
+                                        .findOne({
+                                            where: {
+                                                UserId: user.id
+                                            }
+                                        })
+                                        .then( (resetPasswordTokenInstance) => {
+                                            assert.equal(null, resetPasswordTokenInstance);
+
+                                            // log the user in again
+                                            request(server)
+                                                .post('/api/sessions')
+                                                .send({
+                                                    email: user.email,
+                                                    password: user.password
+                                                })
+                                                .set('Accept', 'application/json')
+                                                .end( (err, res) => {
+                                                    if (err) throw err;
+
+                                                    // check for good response
+                                                    assert.equal(201, res.status);
+                                                    user.sessionId = res.body;
+
+                                                    done();
+                                                });
+                                        });
+                                });
                         });
                 });
         });
 
-        // TODO : test errors (no password, wrong token)
-        // TODO : verify that all passwordToken are destroyed (==> create another one)
-        // TODO : test that the previous sessions has been deleted
-        // TODO : create a new sessionId with the new password
+        it('Should not trigger request because WRONG TOKEN', (done) => {
+            request(server)
+                .post('/api/users/reset-password/' + 'coucou')
+                .send({password: newPassword})
+                .set('Accept', 'application/json')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(404, res.status);
+
+                    done();
+
+                });
+        });
 
     });
 

@@ -19,18 +19,22 @@ module.exports = {
         let errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
 
-        User
-            .create({
-                email: req.body.email,
-                firstname: req.body.firstname,
-                lastname: req.body.lastname,
-                password: passwordCrypt.generate(req.body.password),
-                roles: ['user'],
-                verified: false
+        passwordCrypt
+            .generate(req.body.password)
+            .then( (cryptedPassword) => {
+                return User
+                    .create({
+                        email: req.body.email,
+                        firstname: req.body.firstname,
+                        lastname: req.body.lastname,
+                        password: cryptedPassword,
+                        roles: ['user'],
+                        verified: false
+                    });
             })
             .then((createdInstance) => {
                 let verificationToken = uuid.v4();
-                VerificationToken
+                return VerificationToken
                     .create({
                         UserId: createdInstance.dataValues.id,
                         token: verificationToken
@@ -41,15 +45,14 @@ module.exports = {
 
                         // TODO : send validation mail
 
-                    })
-                    .catch( (error) => {
-                        res.status(500).json(error);
                     });
             })
             .catch((error) => {
                 if (error.name == 'SequelizeUniqueConstraintError') return res.status(409).json(error);
                 res.status(500).json(error);
             });
+
+
     },
 
     verify(req, res) {
@@ -68,13 +71,10 @@ module.exports = {
             .then( (verificationToken) => {
                 if (verificationToken) {
                     User
-                        .update({
-                            verified: true
-                        }, {
-                            where: {
-                                id: verificationToken.UserId
-                            }
-                        })
+                        .update(
+                            { verified: true },
+                            { where: { id: verificationToken.UserId } }
+                        )
                         .then( () => {
                             verificationToken.destroy();
                             res.status(201).end();
@@ -114,8 +114,10 @@ module.exports = {
                                 token: verificationToken
                             })
                             .then( () => {
-                                // TODO : send reset link in a mail
                                 res.status(201).end();
+
+                                // TODO : send reset link in a mail
+
                             })
                             .catch( (error) => {
                                 res.status(500).json(error);

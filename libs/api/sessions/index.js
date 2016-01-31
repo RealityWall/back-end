@@ -25,23 +25,29 @@ module.exports = {
             .then( (user) => {
                 if (user) {
                     if (user.verified) {
-                        let isPasswordCorrect = passwordCrypt.check(user.password, req.body.password);
-                        if (isPasswordCorrect) {
-                            let sessionId = uuid.v4();
-                            Session
-                                .create({
-                                    UserId: user.dataValues.id,
-                                    sessionId: sessionId
-                                })
-                                .then( () => {
-                                    res.status(201).json(sessionId);
-                                })
-                                .catch( (err) => {
-                                    res.status(500).json(err);
-                                });
-                        } else {
-                            res.status(401).json(new Error('Wrong Password'));
-                        }
+                        passwordCrypt
+                            .check(user.password, req.body.password)
+                            .then( (isPasswordCorrect) => {
+                                if (isPasswordCorrect) {
+                                    let sessionId = uuid.v4();
+                                    Session
+                                        .create({
+                                            UserId: user.dataValues.id,
+                                            sessionId: sessionId
+                                        })
+                                        .then( () => {
+                                            res.status(201).json(sessionId);
+                                        })
+                                        .catch( (err) => {
+                                            res.status(500).json(err);
+                                        });
+                                } else {
+                                    res.status(401).json(new Error('Wrong Password'));
+                                }
+                            })
+                            .catch( (err) => {
+                                res.status(500).json(err);
+                            })
                     } else {
                         res.status(401).json(new Error('You must verify your email'));
                     }
@@ -53,6 +59,7 @@ module.exports = {
             .catch( (err) => {
                 res.status(500).json(err);
             })
+
     }
 
 };

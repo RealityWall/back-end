@@ -25,35 +25,37 @@ module.exports = {
             })
             .then( (resetPasswordTokenInstance) => {
                 if (resetPasswordTokenInstance) {
-                    User
-                        .update({
-                            password: passwordCrypt.generate(req.body.password)
-                        }, {
-                            where: {
-                                id: resetPasswordTokenInstance.User.id
-                            }
-                        })
-                        .then( (userInstance) => {
-                            return Session // delete all session opened
-                                .destroy({
+                    passwordCrypt
+                        .generate(req.body.password)
+                        .then( (cryptedPassword) => {
+                            return User
+                                .update({
+                                    password: cryptedPassword
+                                }, {
                                     where: {
-                                        UserId: userInstance.id
+                                        id: resetPasswordTokenInstance.User.id
                                     }
-                                }).then( () => {
-                                    return ResetPasswordToken // delete all the other reset password token
+                                })
+                                .then( () => {
+                                    return Session // delete all session opened
                                         .destroy({
                                             where: {
-                                                UserId: userInstance.id
+                                                UserId: resetPasswordTokenInstance.User.id
                                             }
-                                        });
+                                        }).then( () => {
+                                            return ResetPasswordToken // delete all the other reset password token
+                                                .destroy({
+                                                    where: {
+                                                        UserId: resetPasswordTokenInstance.User.id
+                                                    }
+                                                });
+                                        })
+                                })
+                                .then( () => {
+                                    res.status(201).end();
                                 })
                         })
-                        .then( () => {
-                            res.status(201).end();
-                        })
-                        .catch( (error) => {
-                            res.status(500).json(error);
-                        })
+                        .catch()
                 } else {
                     res.status(404).end();
                 }
