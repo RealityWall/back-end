@@ -5,8 +5,6 @@ let buildServer = require('../server.js');
 let models = require('../libs/models');
 let request = require('supertest');
 
-
-
 describe('Server API Test', () => {
 
     let server = null;
@@ -25,14 +23,17 @@ describe('Server API Test', () => {
     });
 
     after( (done) => {
-        models.User.destroy({
-            where: {
-                email: user.email
-            }
-        }).then( (numberDestroyed) => {
-            assert.equal(1, numberDestroyed);
-            server.close(done);
-        });
+        models
+            .User
+            .destroy({
+                where: {
+                    email: user.email
+                }
+            })
+            .then( (numberDestroyed) => {
+                assert.equal(1, numberDestroyed);
+                server.close(done);
+            });
     });
 
     describe('POST /users', () => {
