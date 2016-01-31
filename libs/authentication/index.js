@@ -6,6 +6,11 @@ let User = models.User;
 
 module.exports = {
 
+    /**
+     * Check if the user connected has the rights to invoke route
+     *
+     * @param roles the roles that are authorized for the route
+     */
     isInRole: function (roles) {
 
         return function (req, res, next) {
@@ -19,6 +24,7 @@ module.exports = {
                     })
                     .then( (sessionInstance) => {
                         if (sessionInstance) {
+                            req.User = sessionInstance.User;
                             for (let i = 0; i < roles.length; i++) {
                                 if (sessionInstance.User.roles.indexOf(roles[i]) >= 0) {
                                     next();

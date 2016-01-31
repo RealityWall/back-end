@@ -1,5 +1,7 @@
 var bcrypt = require('bcryptjs');
 
+// TODO : make it async for better performance
+
 module.exports = {
     /**
      * Generate Password

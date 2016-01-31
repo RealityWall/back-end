@@ -14,6 +14,7 @@ describe('Server API Test', () => {
         firstname: 'super',
         lastname: 'developer'
     };
+    let newPassword = 'newPassword';
 
     before( (done) => {
         buildServer( (_server) => {
@@ -114,7 +115,8 @@ describe('Server API Test', () => {
         });
 
         it('Should verify the previous created user', (done) => {
-            models.VerificationToken
+            models
+                .VerificationToken
                 .findOne({
                     where: {
                         UserId: user.id
@@ -130,7 +132,17 @@ describe('Server API Test', () => {
                             // check for good response
                             assert.equal(201, res.status);
 
-                            done();
+                            // verify that the token has been deleted
+                            models
+                                .VerificationToken
+                                .findOne({
+                                    where: {
+                                        token: verificationToken.token
+                                    }
+                                })
+                                .then( (verificationTokenInstance) => {
+                                    if (!verificationTokenInstance) done();
+                                });
                         });
                 })
         });
@@ -160,7 +172,97 @@ describe('Server API Test', () => {
 
     });
 
+    describe('POST /users/forgot-password', () => {
 
+        it ('Should send a forget password request', (done) => {
+            request(server)
+                .post('/api/users/forgot-password')
+                .send({email: user.email})
+                .set('Accept', 'application/json')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(201, res.status);
+
+                    // create one again
+                    request(server)
+                        .post('/api/users/forgot-password')
+                        .send({email: user.email})
+                        .set('Accept', 'application/json')
+                        .end( () => {
+                            done();
+                        });
+                });
+        });
+
+        // TODO : Test with a user that is not verified
+        // TODO : Test with a wrong email (404)
+
+    });
+
+    describe('DELETE /users/reset-password/:token', () => {
+
+        it('Should delete the first reset password token', (done) => {
+            models
+                .ResetPasswordToken
+                .findOne({
+                    where: {
+                        UserId: user.id
+                    }
+                })
+                .then( (resetPasswordTokenInstance) => {
+                    request(server)
+                        .del('/api/users/reset-password/' + resetPasswordTokenInstance.token)
+                        .set('Accept', 'application/json')
+                        .end( (err, res) => {
+                            if (err) throw err;
+
+                            // check for good response
+                            assert.equal(204, res.status);
+
+                            done();
+                        });
+                });
+        });
+
+        // TODO : test with 404 token
+
+    });
+
+    describe('POST /users/reset-password/:token', () => {
+
+        it('Should update the password of the user', (done) => {
+            models
+                .ResetPasswordToken
+                .findOne({
+                    where: {
+                        UserId: user.id
+                    }
+                })
+                .then( (resetPasswordTokenInstance) => {
+                    request(server)
+                        .post('/api/users/reset-password/' + resetPasswordTokenInstance.token)
+                        .send({password: newPassword})
+                        .set('Accept', 'application/json')
+                        .end( (err, res) => {
+                            if (err) throw err;
+
+                            // check for good response
+                            assert.equal(201, res.status);
+                            user.password = newPassword;
+
+                            done();
+                        });
+                });
+        });
+
+        // TODO : test errors (no password, wrong token)
+        // TODO : verify that all passwordToken are destroyed (==> create another one)
+        // TODO : test that the previous sessions has been deleted
+        // TODO : create a new sessionId with the new password
+
+    });
 
 
 });

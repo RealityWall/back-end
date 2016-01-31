@@ -3,6 +3,7 @@
 let models = require('../../models');
 let User = models.User;
 let VerificationToken = models.VerificationToken;
+let ResetPasswordToken = models.ResetPasswordToken;
 let passwordCrypt = require('../../password-crypt');
 let uuid = require('node-uuid');
 
@@ -88,7 +89,47 @@ module.exports = {
             .catch( (error) => {
                 res.status(500).json(error);
             });
+    },
 
+    forgotPassword(req, res) {
+
+        req.checkBody('email', 'email cannot be empty or must be example@domain.com format').notEmpty().isEmail();
+
+        let errors = req.validationErrors();
+        if (errors) return res.status(400).json(errors);
+
+        User
+            .findOne({
+                where: {
+                    email: req.body.email
+                }
+            })
+            .then((user) => {
+                if (user) {
+                    if (user.dataValues.verified) {
+                        let verificationToken = uuid.v4();
+                        ResetPasswordToken
+                            .create({
+                                UserId: user.dataValues.id,
+                                token: verificationToken
+                            })
+                            .then( () => {
+                                // TODO : send reset link in a mail
+                                res.status(201).end();
+                            })
+                            .catch( (error) => {
+                                res.status(500).json(error);
+                            });
+                    } else {
+                        res.status(401).json(new Error('You must verify your email first'));
+                    }
+                } else {
+                    res.status(404).end();
+                }
+            })
+            .catch((error) => {
+                res.status(500).json(error);
+            });
     }
 
 };

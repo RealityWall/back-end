@@ -3,7 +3,6 @@
 module.exports = (sequelize, DataTypes) => {
     let User = sequelize.define("User", {
         email: {
-            // TODO : add uniq constraint
             type: DataTypes.STRING,
             allowNull: false,
             unique: true,
