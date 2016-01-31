@@ -8,6 +8,8 @@ module.exports = function buildServer(cb) {
 
     let bodyParser = require('body-parser');
     app.use(bodyParser.json());
+    let expressValidator = require('express-validator');
+    app.use(expressValidator());
 
     let router = require('./libs/router');
     app.use('/api', router);

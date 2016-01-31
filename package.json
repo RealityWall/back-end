@@ -21,6 +21,7 @@
     "body-parser": "^1.14.1",
     "cors": "^2.7.1",
     "express": "^4.13.3",
+    "express-validator": "^2.19.0",
     "node-uuid": "^1.4.3",
     "pg": "^4.4.4",
     "sequelize": "^3.18.0"
