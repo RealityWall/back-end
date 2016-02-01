@@ -438,7 +438,22 @@ describe('Server API Test', () => {
                 });
         });
 
-        // TODO : test with a wrong sessionid ==> 404
+        it('Should not upload an image because wrong session', (done) => {
+            request(server)
+                .post('/api/users/avatar')
+                .set('Accept', 'application/json')
+                .set('sessionid', 'wrong-session-uuid')
+                .attach('avatar', __dirname + '/test.png')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(404, res.status);
+
+                    done();
+                });
+        });
+
 
     });
 
