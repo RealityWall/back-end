@@ -10,6 +10,8 @@ module.exports = {
 
     post(req, res) {
 
+        req.sanitizeBody('password').trim();
+
         req.checkParams('token', 'missing param : token').notEmpty();
         req.checkBody('password', 'missing param : password').notEmpty();
 

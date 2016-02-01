@@ -10,6 +10,8 @@ module.exports = {
 
     post(req, res) {
 
+        req.sanitizeBody('password').trim();
+
         req.checkBody('email', 'Invalid email').notEmpty().isEmail();
         req.checkBody('password', 'Invalid password').notEmpty();
 

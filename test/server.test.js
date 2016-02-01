@@ -4,6 +4,7 @@ let assert = require('assert');
 let buildServer = require('../server.js');
 let models = require('../libs/models');
 let request = require('supertest');
+let fs = require('fs');
 
 describe('Server API Test', () => {
 
@@ -43,7 +44,10 @@ describe('Server API Test', () => {
             })
             .then( (numberDestroyed) => {
                 assert.equal(2, numberDestroyed);
-                server.close(done);
+                fs.unlink(__dirname + '/../uploads/users/' + user.imagePath, function () {
+                    server.close(done);
+                });
+
             });
     });
 
@@ -413,6 +417,153 @@ describe('Server API Test', () => {
                 });
         });
 
+    });
+
+    describe('POST /users/picture', () => {
+
+        it('Should upload an image', (done) => {
+            request(server)
+                .post('/api/users/avatar')
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .attach('avatar', __dirname + '/test.png')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(201, res.status);
+                    user.imagePath = res.body;
+
+                    done();
+                });
+        });
+
+        // TODO : test with a wrong sessionid ==> 404
+
+    });
+
+    describe('PUT /users/password', () => {
+
+        let newAmazingPassword = 'newAmazingPassword';
+        let sessionId = null;
+        it('Should update the password of the user', (done) => {
+
+            // create a sessionId for the next test
+            request(server)
+                .post('/api/sessions')
+                .send({
+                    email: user.email,
+                    password: user.password
+                })
+                .set('Accept', 'application/json')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    assert.equal(201, res.status);
+                    sessionId = res.body;
+
+                    // do the test here
+                    request(server)
+                        .put('/api/users/password')
+                        .set('Accept', 'application/json')
+                        .set('sessionid', user.sessionId)
+                        .send({oldPassword: user.password, newPassword: newAmazingPassword})
+                        .end( (err, res) => {
+                            if (err) throw err;
+
+                            // check for good response
+                            assert.equal(200, res.status);
+                            user.password = newAmazingPassword;
+
+                            done();
+                        });
+
+                });
+
+        });
+
+        it('Should not update the password because the sessionId has expired', (done) => {
+            request(server)
+                .put('/api/users/password')
+                .set('Accept', 'application/json')
+                .set('sessionid', sessionId)
+                .send({oldPassword: user.password, newPassword: newPassword})
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(404, res.status);
+
+                    done();
+                });
+        });
+
+        it('Should not update the password because the previous is wrong', (done) => {
+            request(server)
+                .put('/api/users/password')
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .send({oldPassword: 'wrong-password', newPassword: newPassword})
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(403, res.status);
+
+                    done();
+                });
+        });
+
+        it('Should not update the password because the new password is empty', (done) => {
+            request(server)
+                .put('/api/users/password')
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .send({oldPassword: 'wrong-password', newPassword: '       '})
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(400, res.status);
+
+                    done();
+                });
+        });
+
+    });
+
+    describe('PUT /users', () => {
+
+        it('should not change anything', (done) => {
+            request(server)
+                .put('/api/users')
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(200, res.status);
+
+                    done();
+                });
+        });
+
+        it('should change firstname and lastname', (done) => {
+            request(server)
+                .put('/api/users')
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .send({firstname: 'jean-yves', lastname:'delmotte'})
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(200, res.status);
+
+                    done();
+                });
+        })
     });
 
 
