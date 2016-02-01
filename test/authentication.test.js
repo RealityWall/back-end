@@ -69,11 +69,11 @@ describe('Authentication Test', () => {
         let req = {headers: {sessionid: 'coucou'}};
         let res = {
             status: (statusCode) => {
-                assert.equal(404, statusCode);
+                assert.equal(401, statusCode);
                 return res;
             },
-            end: () => { done(); },
-            json: () => {}
+            end: () => { },
+            json: () => {done();}
         };
         authentication.isInRole(['user', 'admin'])(req, res, () => {});
     });

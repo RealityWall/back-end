@@ -448,7 +448,7 @@ describe('Server API Test', () => {
                     if (err) throw err;
 
                     // check for good response
-                    assert.equal(404, res.status);
+                    assert.equal(401, res.status);
 
                     done();
                 });
@@ -506,8 +506,8 @@ describe('Server API Test', () => {
                 .end( (err, res) => {
                     if (err) throw err;
 
-                    // check for good response
-                    assert.equal(404, res.status);
+                    // check for bad response
+                    assert.equal(401, res.status);
 
                     done();
                 });
