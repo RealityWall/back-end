@@ -3,8 +3,10 @@
 let models = require('../../models');
 let User = models.User;
 let Session = models.Session;
+let sequelize = models.sequelize;
 let ResetPasswordToken = models.ResetPasswordToken;
 let passwordCrypt = require('../../password-crypt');
+let errorHandler = require('../../error-handler');
 
 module.exports = {
 
@@ -30,41 +32,46 @@ module.exports = {
                     passwordCrypt
                         .generate(req.body.password)
                         .then( (cryptedPassword) => {
-                            return User
-                                .update({
-                                    password: cryptedPassword
-                                }, {
-                                    where: {
-                                        id: resetPasswordTokenInstance.User.id
-                                    }
-                                })
-                                .then( () => {
-                                    return Session // delete all session opened
-                                        .destroy({
-                                            where: {
-                                                UserId: resetPasswordTokenInstance.User.id
-                                            }
-                                        }).then( () => {
-                                            return ResetPasswordToken // delete all the other reset password token
-                                                .destroy({
-                                                    where: {
-                                                        UserId: resetPasswordTokenInstance.User.id
-                                                    }
-                                                });
-                                        })
-                                })
-                                .then( () => {
-                                    res.status(201).end();
-                                })
+                            sequelize.transaction((t) => {
+                                return User
+                                    .update({
+                                        password: cryptedPassword
+                                    }, {
+                                        where: {
+                                            id: resetPasswordTokenInstance.User.id
+                                        },
+                                        transaction: t
+                                    })
+                                    .then( () => {
+                                        return Session // delete all session opened
+                                            .destroy({
+                                                where: {
+                                                    UserId: resetPasswordTokenInstance.User.id
+                                                },
+                                                transaction: t
+                                            });
+                                    })
+                                    .then( () => {
+                                        return ResetPasswordToken // delete all the other reset password token
+                                            .destroy({
+                                                where: {
+                                                    UserId: resetPasswordTokenInstance.User.id
+                                                },
+                                                transaction: t
+                                            });
+                                    })
+                            })
+                            .then(() => {
+                                res.status(201).end();
+                            })
+                            .catch(errorHandler.internalError(res));
                         })
-                        .catch()
+                        .catch(errorHandler.internalError(res))
                 } else {
                     res.status(404).end();
                 }
             })
-            .catch( (error) => {
-                res.status(500).json(error);
-            })
+            .catch(errorHandler.internalError(res))
 
     },
 
@@ -88,9 +95,7 @@ module.exports = {
                     res.status(404).end();
                 }
             })
-            .catch( (error) => {
-                res.status(500).json(error);
-            });
+            .catch(errorHandler.internalError(res));
 
     }
 };

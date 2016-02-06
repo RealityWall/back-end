@@ -1,15 +1,15 @@
 'use strict';
 
-let fs = require('fs');
 let models = require('../../models');
+let request = require('request');
 let User = models.User;
 let Session = models.Session;
+let sequelize = models.sequelize;
 let VerificationToken = models.VerificationToken;
 let ResetPasswordToken = models.ResetPasswordToken;
 let passwordCrypt = require('../../password-crypt');
 let uuid = require('node-uuid');
-let multer = require('multer');
-let upload = multer({ dest: __dirname + '/../../../uploads/users' }).single('avatar');
+let errorHandler = require('../../error-handler');
 
 module.exports = {
 
@@ -30,35 +30,36 @@ module.exports = {
         passwordCrypt
             .generate(req.body.password)
             .then( (cryptedPassword) => {
-                return User
-                    .create({
-                        email: req.body.email,
-                        firstname: req.body.firstname,
-                        lastname: req.body.lastname,
-                        password: cryptedPassword,
-                        roles: ['user'],
-                        verified: false
-                    });
-            })
-            .then((createdInstance) => {
-                let verificationToken = uuid.v4();
-                return VerificationToken
-                    .create({
-                        UserId: createdInstance.dataValues.id,
-                        token: verificationToken
-                    })
-                    .then( () => {
-                        delete createdInstance.dataValues.password;
-                        res.status(201).json(createdInstance);
+                let _createdInstance = {};
+                sequelize.transaction((t) => {
+                    return User
+                        .create({
+                            email: req.body.email,
+                            firstname: req.body.firstname,
+                            lastname: req.body.lastname,
+                            password: cryptedPassword,
+                            roles: ['user'],
+                            verified: false
+                        }, {transaction: t})
+                        .then((createdInstance) => {
+                            _createdInstance = createdInstance;
+                            let verificationToken = uuid.v4();
+                            return VerificationToken
+                                .create({
+                                    UserId: _createdInstance.dataValues.id,
+                                    token: verificationToken
+                                }, {transaction: t});
+                        })
+                })
+                .then(() => {
+                    delete _createdInstance.dataValues.password;
+                    res.status(201).json(_createdInstance);
 
-                        // TODO : send validation mail
-
-                    });
+                    // TODO : send validation mail
+                })
+                .catch(errorHandler.internalErrorOrUniqueConstraint(res));
             })
-            .catch((error) => {
-                if (error.name == 'SequelizeUniqueConstraintError') return res.status(409).json(error);
-                res.status(500).json(error);
-            });
+            .catch(errorHandler.internalError(res));
 
 
     },
@@ -83,9 +84,7 @@ module.exports = {
             .then( () => {
                 res.status(200).end();
             })
-            .catch( (error) => {
-                res.status(500).json(error);
-            })
+            .catch(errorHandler.internalError(res))
     },
 
     putPassword(req, res) {
@@ -107,58 +106,37 @@ module.exports = {
                     passwordCrypt
                         .generate(req.body.newPassword)
                         .then( (cryptedPassword) => {
-                            return User
-                                .update(
-                                    {password: cryptedPassword},
-                                    {where: {id: req.User.id}}
-                                )
+                            sequelize.transaction((t) => {
+                                    return User
+                                        .update(
+                                            {password: cryptedPassword},
+                                            {where: {id: req.User.id}, transaction: t}
+                                        )
+                                        .then(() => {
+                                            return Session
+                                                .destroy({
+                                                    where: {
+                                                        $and: [
+                                                            {UserId: req.User.id},
+                                                            {sessionId: { $ne: req.headers.sessionid }}
+                                                        ]
+                                                    },
+                                                    transaction: t
+                                                });
+                                        })
+                            })
+                            .then(() => {
+                                res.status(200).end();
+                            })
+                            .catch(errorHandler.internalError(res));
                         })
-                        .then( () => {
-                            return Session
-                                .destroy({
-                                    where: {
-                                        $and: [
-                                            {UserId: req.User.id},
-                                            {sessionId: { $ne: req.headers.sessionid }}
-                                        ]
-                                    }
-                                })
-                        })
-                        .then( () => {
-                            res.status(200).end();
-                        })
-                        .catch( (error) => {
-                            res.status(500).json(error);
-                        });
+                        .catch(errorHandler.internalError(res));
 
                 } else {
                     res.status(403).end();
                 }
             })
-            .catch( (error) => {
-                res.status(500).json(error);
-            })
-    },
-
-    postAvatar(req, res) {
-        upload(req, res, (err) => {
-            if (err) return res.status(500).json(err);
-
-            // Everything went fine
-            User
-                .update(
-                    { imagePath: req.file.filename},
-                    { where: { id: req.User.id } }
-                )
-                .then( (userInstance) => {
-                    // delete previous imagePath
-                    if (req.User.imagePath) fs.unlink(__dirname + '/../../../uploads/users/' + req.User.imagePath);
-                    res.status(201).json(req.file.filename);
-                })
-                .catch( (error) => {
-                    res.status(500).json(error);
-                });
-        })
+            .catch(errorHandler.internalError(res))
     },
 
     verify(req, res) {
@@ -176,25 +154,26 @@ module.exports = {
             })
             .then( (verificationToken) => {
                 if (verificationToken) {
-                    User
-                        .update(
-                            { verified: true },
-                            { where: { id: verificationToken.UserId } }
-                        )
-                        .then( () => {
-                            verificationToken.destroy();
-                            res.status(201).end();
-                        })
-                        .catch( (error) => {
-                            res.status(500).json(error);
-                        });
+                    sequelize.transaction((t) => {
+                        return User
+                            .update(
+                                { verified: true },
+                                { where: { id: verificationToken.UserId } , transaction: t}
+                            )
+                            .then( () => {
+                                return verificationToken
+                                    .destroy({transaction: t});
+                            });
+                    })
+                    .then(() => {
+                        res.status(201).end();
+                    })
+                    .catch(errorHandler.internalError(res));
                 } else {
                     res.status(404).end();
                 }
             })
-            .catch( (error) => {
-                res.status(500).json(error);
-            });
+            .catch(errorHandler.internalError(res));
     },
 
     forgotPassword(req, res) {
@@ -225,9 +204,7 @@ module.exports = {
                                 // TODO : send reset link in a mail
 
                             })
-                            .catch( (error) => {
-                                res.status(500).json(error);
-                            });
+                            .catch(errorHandler.internalError(res));
                     } else {
                         res.status(401).json(new Error('You must verify your email first'));
                     }
@@ -235,9 +212,74 @@ module.exports = {
                     res.status(404).end();
                 }
             })
-            .catch((error) => {
-                res.status(500).json(error);
-            });
+            .catch(errorHandler.internalError(res));
+    },
+
+    facebook(req, res) {
+        request.get(
+            'https://graph.facebook.com/me' +
+            '?access_token=' + req.body.accessToken,
+            (err, response) => {
+                if (err) return errorHandler.internalError(res)(err);
+                if (response.statusCode !== 200) return res.status(response.statusCode).json(response.body);
+
+
+                let body = JSON.parse(response.body);
+                if (body.id != req.body.facebookId) return req.status(401).json(new Error('facebookId doesn\'t match'));
+
+
+                User
+                    .findOne({
+                        where: {
+                            email: body.email
+                        }
+                    })
+                    .then((userInstance) => {
+                        if (userInstance) {
+                            if (userInstance.dataValues.facebookId) {
+                                let sessionId = uuid.v4();
+                                Session
+                                    .create({
+                                        UserId: userInstance.dataValues.id,
+                                        sessionId: sessionId
+                                    })
+                                    .then( () => {
+                                        res.status(201).json(sessionId);
+                                    })
+                                    .catch(errorHandler.internalError(res));
+                            } else {
+                                res.status(409).json(new Error('this email already exists'));
+                            }
+                        } else {
+                            let sessionId = uuid.v4();
+                            sequelize.transaction((t) => {
+                                return User
+                                    .create({
+                                        email: body.email,
+                                        firstname: body.first_name,
+                                        lastname: body.last_name,
+                                        password: null,
+                                        roles: ['user'],
+                                        verified: true,
+                                        facebookId: body.id
+                                    }, {transaction: t})
+                                    .then( (userInstance) => {
+                                        return Session
+                                            .create({
+                                                UserId: userInstance.dataValues.id,
+                                                sessionId: sessionId
+                                            }, {transaction: t});
+                                    })
+                            })
+                            .then( () => {
+                                res.status(201).json(sessionId);
+                            })
+                            .catch(errorHandler.internalErrorOrUniqueConstraint(res));
+                        }
+                    })
+                    .catch(errorHandler.internalError(res));
+            }
+        );
     }
 
 };

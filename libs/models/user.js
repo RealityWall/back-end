@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         password: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         firstname: {
             type: DataTypes.STRING,
@@ -24,13 +24,16 @@ module.exports = (sequelize, DataTypes) => {
         },
         imagePath: {
             type: DataTypes.STRING,
-            allowNull: true,
             defaultValue: null
         },
         verified: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false
+        },
+        facebookId: {
+            type: DataTypes.STRING,
+            defaultValue: null
         },
         roles: {
             type: DataTypes.ARRAY(DataTypes.STRING),
@@ -49,7 +52,8 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         classMethods: {
             associate: (models) => {
-                User.hasMany(models.Session)
+                User.hasMany(models.Session);
+                User.hasMany(models.Post);
             }
         }
     });

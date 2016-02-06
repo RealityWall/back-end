@@ -4,9 +4,8 @@ let assert = require('assert');
 let buildServer = require('../server.js');
 let models = require('../libs/models');
 let request = require('supertest');
-let fs = require('fs');
 
-describe('Server API Test', () => {
+describe('User Route on Server API Test', () => {
 
     let server = null;
     let user = {
@@ -28,7 +27,7 @@ describe('Server API Test', () => {
         buildServer( (_server) => {
             server = _server;
             done();
-        })
+        });
     });
 
     after( (done) => {
@@ -44,10 +43,7 @@ describe('Server API Test', () => {
             })
             .then( (numberDestroyed) => {
                 assert.equal(2, numberDestroyed);
-                fs.unlink(__dirname + '/../uploads/users/' + user.imagePath, function () {
-                    server.close(done);
-                });
-
+                server.close(done);
             });
     });
 
@@ -419,7 +415,7 @@ describe('Server API Test', () => {
 
     });
 
-    describe('POST /users/picture', () => {
+    describe('POST /users/avatar', () => {
 
         it('Should upload an image', (done) => {
             request(server)
@@ -455,6 +451,24 @@ describe('Server API Test', () => {
         });
 
 
+    });
+
+    describe('DELETE /users/avatar', () => {
+        it('Should delete an image', (done) => {
+            request(server)
+                .delete('/api/users/avatar')
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(204, res.status);
+                    user.imagePath = '';
+
+                    done();
+                });
+        });
     });
 
     describe('PUT /users/password', () => {
@@ -581,5 +595,23 @@ describe('Server API Test', () => {
         })
     });
 
+    describe('DELETE /sessions', () => {
+        it('should not change anything', (done) => {
+            request(server)
+                .delete('/api/sessions')
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(204, res.status);
+
+                    done();
+                });
+        });
+    });
+
+    // TODO : POST /walls -> should not work because 403
 
 });

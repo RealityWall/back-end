@@ -5,6 +5,7 @@ let User = models.User;
 let Session = models.Session;
 let passwordCrypt = require('../../password-crypt');
 var uuid = require('node-uuid');
+let errorHandler = require('../../error-handler');
 
 module.exports = {
 
@@ -40,16 +41,12 @@ module.exports = {
                                         .then( () => {
                                             res.status(201).json(sessionId);
                                         })
-                                        .catch( (err) => {
-                                            res.status(500).json(err);
-                                        });
+                                        .catch(errorHandler.internalError(res));
                                 } else {
                                     res.status(401).json(new Error('Wrong Password'));
                                 }
                             })
-                            .catch( (err) => {
-                                res.status(500).json(err);
-                            })
+                            .catch(errorHandler.internalError(res))
                     } else {
                         res.status(401).json(new Error('You must verify your email'));
                     }
@@ -58,10 +55,21 @@ module.exports = {
                     res.status(404).end(user);
                 }
             })
-            .catch( (err) => {
-                res.status(500).json(err);
-            })
+            .catch(errorHandler.internalError(res))
 
+    },
+
+    'delete': (req, res) => {
+        Session
+            .destroy({
+                where: {
+                    sessionId: req.headers.sessionid
+                }
+            })
+            .then(() => {
+                res.status(204).end();
+            })
+            .catch(errorHandler.internalError(res));
     }
 
 };
