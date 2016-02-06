@@ -15,11 +15,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.FLOAT,
             allowNull: false,
             validate: { min: -180, max: 180 }
-        },
-        images: {
-            type: DataTypes.ARRAY(DataTypes.STRING),
-            defaultValue: [],
-            allowNull: false
         }
     }, {
         classMethods: {
