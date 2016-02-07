@@ -13,6 +13,12 @@ let errorHandler = require('../../error-handler');
 
 module.exports = {
 
+    'get': (req, res) => {
+        delete req.User.password;
+        delete req.User.dataValues.password;
+        res.status(200).json(req.User);
+    },
+
     post(req, res) {
 
         req.sanitizeBody('firstname').trim();

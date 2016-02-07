@@ -595,6 +595,78 @@ describe('User Route on Server API Test', () => {
         })
     });
 
+    describe('POST /walls', () => {
+
+        it('Should not post a new wall', (done) => {
+            request(server)
+                .post('/api/walls')
+                .send({
+                    address: 'yeah',
+                    longitude : 0,
+                    latitude: 0
+                })
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(403, res.status);
+
+                    done();
+                });
+        });
+
+    });
+
+    describe('PUT /walls', () => {
+
+        it('Should not post a new wall', (done) => {
+            request(server)
+                .put('/api/walls/2')
+                .send({
+                    address: 'yeah',
+                    longitude : 0,
+                    latitude: 0
+                })
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(403, res.status);
+
+                    done();
+                });
+        });
+
+    });
+
+    describe('DELETE /walls', () => {
+
+        it('Should not post a new wall', (done) => {
+            request(server)
+                .delete('/api/walls/2')
+                .send({
+                    address: 'yeah',
+                    longitude : 0,
+                    latitude: 0
+                })
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(403, res.status);
+
+                    done();
+                });
+        });
+
+    });
+
     describe('DELETE /sessions', () => {
         it('should not change anything', (done) => {
             request(server)
@@ -612,6 +684,6 @@ describe('User Route on Server API Test', () => {
         });
     });
 
-    // TODO : POST /walls -> should not work because 403
+
 
 });

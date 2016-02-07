@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         classMethods: {
             associate: (models) => {
                 Wall.hasMany(models.Post);
+                Wall.hasMany(models.Picture);
             }
         }
     });

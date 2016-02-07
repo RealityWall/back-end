@@ -8,6 +8,7 @@ let express = require('express');
 let router  = express.Router();
 
 router
+    .get('/', authentication.isInRole(['user', 'admin']), usersApi.get)
     .post('/', usersApi.post)
     .put('/', authentication.isInRole(['user', 'admin']), usersApi.put)
     .put('/password', authentication.isInRole(['user', 'admin']), usersApi.putPassword)

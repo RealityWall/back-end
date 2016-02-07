@@ -75,6 +75,7 @@ describe('Admin Route on Server API Test', () => {
 
                     // check for good response
                     assert.equal(201, res.status);
+                    wall.id = res.body.id;
 
                     done();
                 });
@@ -123,6 +124,110 @@ describe('Admin Route on Server API Test', () => {
                     done();
                 });
         });
+    });
+
+    describe('PUT /walls/:id', () => {
+
+        it('should update the previous created wall', (done) => {
+            request(server)
+                .put('/api/walls/' + wall.id)
+                .send({address: 'this is an amazing address'})
+                .set('Accept', 'application/json')
+                .set('sessionid', sessionId)
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(200, res.status);
+                    wall.address = 'this is an amazing address';
+
+                    done();
+                });
+        });
+
+        it('should not update a wall that not exists', (done) => {
+            request(server)
+                .put('/api/walls/-2')
+                .send({address: 'this is an amazing address'})
+                .set('Accept', 'application/json')
+                .set('sessionid', sessionId)
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(404, res.status);
+
+                    done();
+                });
+        });
+
+    });
+
+    describe('GET /walls/:id', () => {
+
+        it ('should get the provous updated wall', (done) => {
+            request(server)
+                .get('/api/walls/' + wall.id)
+                .set('Accept', 'application/json')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(200, res.status);
+                    assert.equal(0, res.body.Pictures);
+
+                    done();
+                });
+        });
+
+        it ('should not get the wall because 404', (done) => {
+            request(server)
+                .get('/api/walls/-2' )
+                .set('Accept', 'application/json')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(404, res.status);
+
+                    done();
+                });
+        });
+
+    });
+
+    describe('DELETE /walls/:id', () => {
+
+        it ('should delete the previous updated wall', (done) => {
+            request(server)
+                .delete('/api/walls/' + wall.id)
+                .set('Accept', 'application/json')
+                .set('sessionid', sessionId)
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(204, res.status);
+
+                    done();
+                });
+        });
+
+        it ('should not delete the previous updated wall because not exists', (done) => {
+            request(server)
+                .delete('/api/walls/' + wall.id)
+                .set('Accept', 'application/json')
+                .set('sessionid', sessionId)
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(404, res.status);
+
+                    done();
+                });
+        });
+
     });
 
 });
