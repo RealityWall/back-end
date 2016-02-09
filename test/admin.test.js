@@ -213,7 +213,7 @@ describe('Admin Route on Server API Test', () => {
                     done();
                 });
         });
-        it ('Should upload image for today', (done) => {
+        it ('Should update image for today', (done) => {
             request(server)
                 .post('/api/walls/' + wall.id + '/pictures')
                 .set('Content-Type', 'multipart/form-data')
@@ -229,6 +229,24 @@ describe('Admin Route on Server API Test', () => {
                     done();
                 });
         });
+
+        it ('Should not crete image for today because wall not exists', (done) => {
+            request(server)
+                .post('/api/walls/999/pictures')
+                .set('Content-Type', 'multipart/form-data')
+                .set('sessionid', sessionId)
+                .field('date', new Date().toISOString())
+                .attach('picture', __dirname + '/test.png')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(404, res.status);
+
+                    done();
+                });
+        });
+
     });
 
     describe('DELETE /walls/:id', () => {
