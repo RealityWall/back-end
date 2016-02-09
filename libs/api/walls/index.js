@@ -40,6 +40,12 @@ module.exports = {
     },
 
     getById(req, res) {
+
+        req.checkParams('id', 'id must be an integer').isInt();
+
+        let errors = req.validationErrors();
+        if (errors) return res.status(400).json(errors);
+
         Wall
             .findOne({
                 where: {
@@ -60,6 +66,12 @@ module.exports = {
     },
 
     deleteById(req, res) {
+
+        req.checkParams('id', 'id must be an integer').isInt();
+
+        let errors = req.validationErrors();
+        if (errors) return res.status(400).json(errors);
+
         Wall
             .destroy({
                 where: {
@@ -77,6 +89,8 @@ module.exports = {
     },
 
     putById(req, res) {
+
+        req.checkParams('id', 'id must be an integer').isInt();
 
         let updateQuery = {};
 

@@ -196,6 +196,41 @@ describe('Admin Route on Server API Test', () => {
 
     });
 
+    describe('POST /walls/:id/photos', () => {
+        it ('Should upload image for today', (done) => {
+            request(server)
+                .post('/api/walls/' + wall.id + '/pictures')
+                .set('Content-Type', 'multipart/form-data')
+                .set('sessionid', sessionId)
+                .field('date', new Date().toISOString())
+                .attach('picture', __dirname + '/test.png')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(201, res.status);
+
+                    done();
+                });
+        });
+        it ('Should upload image for today', (done) => {
+            request(server)
+                .post('/api/walls/' + wall.id + '/pictures')
+                .set('Content-Type', 'multipart/form-data')
+                .set('sessionid', sessionId)
+                .field('date', new Date().toISOString())
+                .attach('picture', __dirname + '/test.png')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(201, res.status);
+
+                    done();
+                });
+        });
+    });
+
     describe('DELETE /walls/:id', () => {
 
         it ('should delete the previous updated wall', (done) => {

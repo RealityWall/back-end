@@ -8,12 +8,15 @@ module.exports = (sequelize, DataTypes) => {
         },
         date: {
             type: DataTypes.DATE,
-            allowNull: false
+            allowNull: false,
+            unique: 'compositeIndex'
         }
     }, {
         classMethods: {
             associate: (models) => {
-                Picture.belongsTo(models.Wall);
+                Picture.belongsTo(models.Wall, {
+                    unique: 'compositeIndex'
+                });
             }
         }
     });

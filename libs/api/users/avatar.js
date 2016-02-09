@@ -26,7 +26,7 @@ module.exports = {
                     res.status(201).json(req.file.filename);
                 })
                 .catch(errorHandler.internalError(res));
-        })
+        });
     },
 
     'delete': (req, res) => {
