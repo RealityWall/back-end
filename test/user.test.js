@@ -22,11 +22,23 @@ describe('User Route on Server API Test', () => {
         firstname: 'omg',
         lastname: 'wtf'
     };
+    let wall = null;
 
     before( (done) => {
         buildServer( (_server) => {
             server = _server;
-            done();
+            models
+                .Wall
+                .create({
+                    latitude: 0,
+                    longitude: 0,
+                    address: 'address'
+                })
+                .then((_wall) => {
+                    wall = _wall;
+                    done();
+                })
+
         });
     });
 
@@ -43,6 +55,14 @@ describe('User Route on Server API Test', () => {
             })
             .then( (numberDestroyed) => {
                 assert.equal(2, numberDestroyed);
+                return models
+                    .Wall
+                    .destroy({
+                        where: {id: wall.id}
+                    });
+            })
+            .then( (numberDestroyed) => {
+                assert.equal(1, numberDestroyed);
                 server.close(done);
             });
     });
@@ -595,6 +615,92 @@ describe('User Route on Server API Test', () => {
         })
     });
 
+    describe('POST /walls/:id/posts', () => {
+
+        it ('Should throw 404 because wall not exists :/', (done) => {
+            request(server)
+                .post('/api/walls/999/posts')
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .send({content: 'lorem ipsum dolor'})
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(404, res.status);
+
+                    done();
+                });
+        });
+
+        it ('Should post a message on the wall', (done) => {
+            request(server)
+                .post('/api/walls/' + wall.id + '/posts')
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .send({content: 'lorem ipsum dolor'})
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(201, res.status);
+
+                    done();
+                });
+        });
+
+        it ('Should not post a message on the wall because already done today', (done) => {
+            request(server)
+                .post('/api/walls/' + wall.id + '/posts')
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .send({content: 'lorem ipsum dolor'})
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(409, res.status);
+
+                    done();
+                });
+        });
+
+    });
+
+    describe('GET /walls/:id/posts', () => {
+        it ('Should not get message on the wall 403', (done) => {
+            request(server)
+                .get('/api/walls/' + wall.id + '/posts')
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(403, res.status);
+
+                    done();
+                });
+        });
+    });
+
+    describe('PUT /walls/:id/posts', () => {
+        it ('Should not put message on the wall 403', (done) => {
+            request(server)
+                .put('/api/walls/' + wall.id + '/posts/2')
+                .set('Accept', 'application/json')
+                .set('sessionid', user.sessionId)
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(403, res.status);
+
+                    done();
+                });
+        });
+    });
+
     describe('POST /walls', () => {
 
         it('Should not post a new wall', (done) => {
@@ -621,7 +727,7 @@ describe('User Route on Server API Test', () => {
 
     describe('PUT /walls', () => {
 
-        it('Should not post a new wall', (done) => {
+        it('Should not put a new wall', (done) => {
             request(server)
                 .put('/api/walls/2')
                 .send({
@@ -643,9 +749,28 @@ describe('User Route on Server API Test', () => {
 
     });
 
+    describe('POST /walls/:id/pictures', () => {
+        it ('Should not upload image for today because do not have necessary rights', (done) => {
+            request(server)
+                .post('/api/walls/2/pictures')
+                .set('Content-Type', 'multipart/form-data')
+                .set('sessionid', user.sessionId)
+                .field('date', new Date().toISOString())
+                .attach('picture', __dirname + '/test.png')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(403, res.status);
+
+                    done();
+                });
+        });
+    });
+
     describe('DELETE /walls', () => {
 
-        it('Should not post a new wall', (done) => {
+        it('Should not delete a new wall', (done) => {
             request(server)
                 .delete('/api/walls/2')
                 .send({

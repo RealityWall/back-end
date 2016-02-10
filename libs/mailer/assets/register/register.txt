@@ -1,0 +1,6 @@
+Bonjour {{firstname}} {{lastname}},
+
+Cliquez sur le lien ci dessous pour valider votre compte sur notre site unmurdanslereel.fr :
+{{url}}
+
+Toute l'équipe d'Un Mur Dans Le Réel vous souhaite la bienvenue et vous remercie pour l'intérêt que vous portez à notre plate-forme !

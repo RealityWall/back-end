@@ -1,18 +1,18 @@
 'use strict';
 
-let models = require('../../models');
+let models = require('../../../models/index');
 let Wall = models.Wall;
 let Picture = models.Picture;
 let multer = require('multer');
 let moment = require('moment');
-let upload = multer({ dest: __dirname + '/../../../uploads/walls' }).single('picture');
-let errorHandler = require('../../error-handler');
+let upload = multer({ dest: __dirname + '/../../../../uploads/walls' }).single('picture');
+let errorHandler = require('../../../error-handler/index');
 let fs = require('fs');
 
 module.exports = {
 
     post(req, res) {
-        req.checkParams('id', 'id must be an integer').isInt();
+        req.checkParams('wallId', 'wallId must be an integer').isInt();
 
         let errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
@@ -25,12 +25,12 @@ module.exports = {
             req.checkBody('date', 'must be a date').isDate();
             let errors = req.validationErrors();
             if (errors) {
-                fs.unlink(__dirname + '/../../../uploads/walls/' + req.file.filename);
+                fs.unlink(__dirname + '/../../../../uploads/walls/' + req.file.filename);
                 return res.status(400).json(errors);
             }
 
             let pictureDate = moment(req.body.date);
-            pictureDate.hour(0);
+            pictureDate.hour(1);
             pictureDate.minute(0);
             pictureDate.second(0);
             pictureDate.millisecond(0);
@@ -39,24 +39,26 @@ module.exports = {
                 .findOne({
                     where: {
                         date: pictureDate,
-                        WallId: req.params.id
+                        WallId: req.params.wallId
                     }
                 })
                 .then((picture) => {
-
                     if (picture) {
                         // if the picture already exists we juste update it and delete the previous
-                        fs.unlink(__dirname + '/../../../uploads/walls/' + picture.imagePath);
-                        picture.update({
-                            imagePath: req.file.filename
-                        }).then((pictureInstance) => {
-                            res.status(201).json(pictureInstance);
-                        })
+                        fs.unlink(__dirname + '/../../../../uploads/walls/' + picture.imagePath);
+                        picture
+                            .update({
+                                imagePath: req.file.filename
+                            })
+                            .then(() => {
+                                res.status(201).json(req.file.filename);
+                            })
+                            .catch(errorHandler.internalError(res));
                     } else {
                         // if the picture does not exists we check that the wall exists
                         Wall
                             .findOne({
-                                where: {id: req.params.id}
+                                where: {id: req.params.wallId}
                             })
                             .then((wall) => {
                                 if (wall) {
@@ -64,21 +66,21 @@ module.exports = {
                                         .create({
                                             imagePath : req.file.filename,
                                             date: pictureDate,
-                                            WallId: req.params.id
+                                            WallId: req.params.wallId
                                         })
-                                        .then((pictureInstance) => {
-                                            res.status(201).json(pictureInstance);
+                                        .then(() => {
+                                            res.status(201).json(req.file.filename);
                                         })
+                                        .catch(errorHandler.internalError(res));
                                 } else {
-                                    fs.unlink(__dirname + '/../../../uploads/walls/' + req.file.filename);
+                                    fs.unlink(__dirname + '/../../../../uploads/walls/' + req.file.filename);
                                     res.status(404).end();
                                 }
-                            });
+                            })
+                            .catch(errorHandler.internalError(res));
                     }
                 })
-                .catch((err) => {
-                    res.status(500).json(err);
-                });
+                .catch(errorHandler.internalError(res));
         });
 
 

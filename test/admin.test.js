@@ -5,6 +5,7 @@ let buildServer = require('../server.js');
 let models = require('../libs/models');
 let passwordCrypt = require('../libs/password-crypt');
 let request = require('supertest');
+let fs = require('fs');
 
 describe('Admin Route on Server API Test', () => {
 
@@ -40,14 +41,15 @@ describe('Admin Route on Server API Test', () => {
                         })
                         .then((createdInstance) => {
                             user.id = createdInstance.id;
-                            models
+                            return models
                                 .Session
                                 .create({
                                     UserId: user.id,
                                     sessionId: sessionId
                                 })
-                                .then(() => {done();})
+
                         })
+                        .then(() => {done();})
                 });
         });
     });
@@ -163,6 +165,61 @@ describe('Admin Route on Server API Test', () => {
 
     });
 
+    describe('POST /walls/:id/photos', () => {
+        it ('Should upload image for today', (done) => {
+            request(server)
+                .post('/api/walls/' + wall.id + '/pictures')
+                .set('Content-Type', 'multipart/form-data')
+                .set('sessionid', sessionId)
+                .field('date', new Date().toISOString())
+                .attach('picture', __dirname + '/test.png')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(201, res.status);
+                    wall.imagePath = res.body;
+
+                    done();
+                });
+        });
+        it ('Should update image for today', (done) => {
+            request(server)
+                .post('/api/walls/' + wall.id + '/pictures')
+                .set('Content-Type', 'multipart/form-data')
+                .set('sessionid', sessionId)
+                .field('date', new Date().toISOString())
+                .attach('picture', __dirname + '/test.png')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(201, res.status);
+                    wall.imagePath = res.body;
+
+                    done();
+                });
+        });
+
+        it ('Should not create image for today because wall not exists', (done) => {
+            request(server)
+                .post('/api/walls/999/pictures')
+                .set('Content-Type', 'multipart/form-data')
+                .set('sessionid', sessionId)
+                .field('date', new Date().toISOString())
+                .attach('picture', __dirname + '/test.png')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(404, res.status);
+
+                    done();
+                });
+        });
+
+    });
+
     describe('GET /walls/:id', () => {
 
         it ('should get the provous updated wall', (done) => {
@@ -174,7 +231,7 @@ describe('Admin Route on Server API Test', () => {
 
                     // check for good response
                     assert.equal(200, res.status);
-                    assert.equal(0, res.body.Pictures);
+                    assert.equal(1, res.body.Pictures.length);
 
                     done();
                 });
@@ -196,47 +253,95 @@ describe('Admin Route on Server API Test', () => {
 
     });
 
-    describe('POST /walls/:id/photos', () => {
-        it ('Should upload image for today', (done) => {
+    describe('POST /walls/:id/posts', () => {
+
+        it ('Should get one post', (done) => {
             request(server)
-                .post('/api/walls/' + wall.id + '/pictures')
-                .set('Content-Type', 'multipart/form-data')
+                .post('/api/walls/' + wall.id + '/posts')
+                .set('Accept', 'application/json')
                 .set('sessionid', sessionId)
-                .field('date', new Date().toISOString())
-                .attach('picture', __dirname + '/test.png')
                 .end( (err, res) => {
                     if (err) throw err;
 
                     // check for good response
-                    assert.equal(201, res.status);
-
-                    done();
-                });
-        });
-        it ('Should update image for today', (done) => {
-            request(server)
-                .post('/api/walls/' + wall.id + '/pictures')
-                .set('Content-Type', 'multipart/form-data')
-                .set('sessionid', sessionId)
-                .field('date', new Date().toISOString())
-                .attach('picture', __dirname + '/test.png')
-                .end( (err, res) => {
-                    if (err) throw err;
-
-                    // check for good response
-                    assert.equal(201, res.status);
+                    assert.equal(403, res.status);
 
                     done();
                 });
         });
 
-        it ('Should not crete image for today because wall not exists', (done) => {
+    });
+
+    let post = null;
+    describe('GET /walls/:id/posts', () => {
+
+        it ('Should get one post', (done) => {
+            models
+                .Post
+                .create({
+                    content: 'lorem ipsum dolor',
+                    WallId: wall.id,
+                    UserId: user.id
+                })
+                .then(() => {
+
+                    request(server)
+                        .get('/api/walls/' + wall.id + '/posts')
+                        .set('Accept', 'application/json')
+                        .set('sessionid', sessionId)
+                        .end( (err, res) => {
+                            if (err) throw err;
+
+                            // check for good response
+                            assert.equal(200, res.status);
+                            assert(1, res.body.length);
+                            post = res.body[0];
+
+                            done();
+                        });
+
+                });
+        });
+
+    });
+
+    describe('PUT /walls/:id/posts/:id', () => {
+
+        it ('Should update post', (done) => {
             request(server)
-                .post('/api/walls/999/pictures')
-                .set('Content-Type', 'multipart/form-data')
+                .put('/api/walls/' + wall.id + '/posts/' + post.id)
+                .set('Accept', 'application/json')
                 .set('sessionid', sessionId)
-                .field('date', new Date().toISOString())
-                .attach('picture', __dirname + '/test.png')
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(200, res.status);
+
+                    done();
+                });
+        });
+
+        it ('Should not update one post', (done) => {
+            request(server)
+                .put('/api/walls/999/posts/' + post.id)
+                .set('Accept', 'application/json')
+                .set('sessionid', sessionId)
+                .end( (err, res) => {
+                    if (err) throw err;
+
+                    // check for good response
+                    assert.equal(404, res.status);
+
+                    done();
+                });
+        });
+
+        it ('Should not update one post', (done) => {
+            request(server)
+                .put('/api/walls/' + wall.id + '/posts/999')
+                .set('Accept', 'application/json')
+                .set('sessionid', sessionId)
                 .end( (err, res) => {
                     if (err) throw err;
 
@@ -261,6 +366,7 @@ describe('Admin Route on Server API Test', () => {
 
                     // check for good response
                     assert.equal(204, res.status);
+                    fs.unlink(__dirname + '/../uploads/walls/' + wall.imagePath);
 
                     done();
                 });

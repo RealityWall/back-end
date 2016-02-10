@@ -1,12 +1,12 @@
 'use strict';
 
-let models = require('../../models');
+let models = require('../../../models/index');
 let User = models.User;
 let Session = models.Session;
 let sequelize = models.sequelize;
 let ResetPasswordToken = models.ResetPasswordToken;
-let passwordCrypt = require('../../password-crypt');
-let errorHandler = require('../../error-handler');
+let passwordCrypt = require('../../../password-crypt/index');
+let errorHandler = require('../../../error-handler/index');
 
 module.exports = {
 

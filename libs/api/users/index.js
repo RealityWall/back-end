@@ -5,6 +5,7 @@ let request = require('request');
 let User = models.User;
 let Session = models.Session;
 let sequelize = models.sequelize;
+let mailer = require('../../mailer');
 let VerificationToken = models.VerificationToken;
 let ResetPasswordToken = models.ResetPasswordToken;
 let passwordCrypt = require('../../password-crypt');
@@ -57,11 +58,11 @@ module.exports = {
                                 }, {transaction: t});
                         })
                 })
-                .then(() => {
+                .then((verificationTokenInstance) => {
                     delete _createdInstance.dataValues.password;
                     res.status(201).json(_createdInstance);
 
-                    // TODO : send validation mail
+                    mailer.sendVerificationMail(_createdInstance.dataValues, verificationTokenInstance.dataValues.token)
                 })
                 .catch(errorHandler.internalErrorOrUniqueConstraint(res));
             })
@@ -286,6 +287,31 @@ module.exports = {
                     .catch(errorHandler.internalError(res));
             }
         );
+    },
+
+    didNotReceiveMail(req, res) {
+        req.checkBody('email', 'email cannot be empty or must be example@domain.com format').notEmpty().isEmail();
+
+        let errors = req.validationErrors();
+        if (errors) return res.status(400).json(errors);
+
+        User
+            .findOne({
+                where: {
+                    verified: false,
+                    email: req.body.email
+                },
+                include: [{ model: VerificationToken }]
+            })
+            .then((userInstance) => {
+                if (userInstance && userInstance.VerificationTokens && userInstance.VerificationTokens.length > 0) {
+                    mailer.sendVerificationMail(userInstance.dataValues, userInstance.dataValues.VerificationTokens[0].token);
+                    res.status(201).end();
+                } else {
+                    res.status(409).end();
+                }
+            })
+            .catch(errorHandler.internalError(res));
     }
 
 };

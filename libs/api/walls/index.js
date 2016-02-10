@@ -41,7 +41,7 @@ module.exports = {
 
     getById(req, res) {
 
-        req.checkParams('id', 'id must be an integer').isInt();
+        req.checkParams('wallId', 'wallId must be an integer').isInt();
 
         let errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
@@ -49,7 +49,7 @@ module.exports = {
         Wall
             .findOne({
                 where: {
-                    id: req.params.id
+                    id: req.params.wallId
                 },
                 include: [
                     { model: Picture }
@@ -67,7 +67,7 @@ module.exports = {
 
     deleteById(req, res) {
 
-        req.checkParams('id', 'id must be an integer').isInt();
+        req.checkParams('wallId', 'wallId must be an integer').isInt();
 
         let errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
@@ -75,7 +75,7 @@ module.exports = {
         Wall
             .destroy({
                 where: {
-                    id: req.params.id
+                    id: req.params.wallId
                 }
             })
             .then((nbDestroyed) => {
@@ -90,7 +90,7 @@ module.exports = {
 
     putById(req, res) {
 
-        req.checkParams('id', 'id must be an integer').isInt();
+        req.checkParams('wallId', 'wallId must be an integer').isInt();
 
         let updateQuery = {};
 
@@ -118,7 +118,7 @@ module.exports = {
         Wall
             .update(
                 updateQuery,
-                { where: { id: req.params.id } }
+                { where: { id: req.params.wallId } }
             )
             .then((affectedRows) => {
                 if (affectedRows.length === 1 && affectedRows[0] === 1) {

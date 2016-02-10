@@ -3,7 +3,15 @@
 let fs        = require("fs");
 let path      = require("path");
 let Sequelize = require("sequelize");
-let sequelize = new Sequelize('postgres://delmotte:password@localhost/realitywall', {logging: false});
+let POSTGRES = require('../../../constants.js').POSTGRES;
+let sequelize = new Sequelize(
+    'postgres://'
+    + POSTGRES.USERNAME
+    + ':' + POSTGRES.PASSWORD
+    + '@' + POSTGRES.HOST
+    + '/realitywall',
+    {logging: false}
+);
 let db        = {};
 
 fs
