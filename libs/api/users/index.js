@@ -96,8 +96,8 @@ module.exports = {
 
     putPassword(req, res) {
 
-        req.sanitizeBody('oldPassword').trim();
-        req.sanitizeBody('newPassword').trim();
+        //req.sanitizeBody('oldPassword').trim();
+        //req.sanitizeBody('newPassword').trim();
 
         req.checkBody('oldPassword', 'oldPassword cannot be empty').notEmpty();
         req.checkBody('newPassword', 'newPassword cannot be empty').notEmpty();

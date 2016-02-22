@@ -13,7 +13,10 @@ module.exports = {
     post(req, res) {
         upload(req, res, (err) => {
             if (err) return errorHandler.internalError(res)(err);
-            if (!req.file.filename) return res.status(400).json(new Error('missing file'));
+            if (!req.file || !req.file.filename) {
+                console.log('missing file');
+                return res.status(400).json(new Error('missing file'));
+            }
 
             // Everything went fine
             User

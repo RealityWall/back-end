@@ -33,4 +33,36 @@ Object.keys(db).forEach(function(modelName) {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
+db.initialize = () => {
+    let passwordCrypt = require('../password-crypt');
+    return new Promise( (resolve, reject) => {
+        db
+            .Wall
+            .bulkCreate([
+                {address: 'address, 06560 Valbonne', latitude: 43.700000, longitude: 7.250000},
+                {address: 'address, 06560 Valbonne', latitude: 43.6329, longitude: 6.9991},
+                {address: 'address, 06600 Antibes', latitude: 43.5833, longitude: 7.1167}
+            ])
+            .then(() => {
+                return passwordCrypt
+                    .generate('password');
+            })
+            .then((password) => {
+                return db
+                    .User
+                    .create({
+                        email: 'admin@unmurdanslereel.fr',
+                        password,
+                        firstname: "admin",
+                        lastname: "admin",
+                        verified: true,
+                        roles: ['admin']
+                    })
+            })
+            .then(resolve)
+            .catch(reject);
+    });
+
+};
+
 module.exports = db;
