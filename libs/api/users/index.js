@@ -2,8 +2,10 @@
 
 let models = require('../../models');
 let request = require('request');
+let moment = require('moment');
 let User = models.User;
 let Session = models.Session;
+let Post = models.Post;
 let sequelize = models.sequelize;
 let mailer = require('../../mailer');
 let VerificationToken = models.VerificationToken;
@@ -17,8 +19,31 @@ module.exports = {
     'get': (req, res) => {
         delete req.User.password;
         delete req.User.dataValues.password;
-        // TODO : fetch last post
-        res.status(200).json(req.User);
+
+        let queryDate = moment();
+        queryDate.hour(1);
+        queryDate.minute(0);
+        queryDate.second(0);
+        queryDate.millisecond(0);
+
+        Post
+            .findOne({
+                where: {
+                    UserId: req.User.id,
+                    createdAt: {
+                        $gt: queryDate
+                    }
+                },
+                order: '"createdAt" DESC'
+            })
+            .then((lastPostInstance) => {
+                req.User.dataValues.lastPost = lastPostInstance;
+                res.status(200).json(req.User);
+            })
+            .catch((err) => {
+                console.log(err);
+                errorHandler.internalError(res)(err)
+            });
     },
 
     post(req, res) {
@@ -97,8 +122,8 @@ module.exports = {
 
     putPassword(req, res) {
 
-        req.sanitizeBody('oldPassword').trim();
-        req.sanitizeBody('newPassword').trim();
+        //req.sanitizeBody('oldPassword').trim();
+        //req.sanitizeBody('newPassword').trim();
 
         req.checkBody('oldPassword', 'oldPassword cannot be empty').notEmpty();
         req.checkBody('newPassword', 'newPassword cannot be empty').notEmpty();

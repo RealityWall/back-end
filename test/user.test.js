@@ -563,22 +563,6 @@ describe('User Route on Server API Test', () => {
                 });
         });
 
-        it('Should not update the password because the new password is empty', (done) => {
-            request(server)
-                .put('/api/users/password')
-                .set('Accept', 'application/json')
-                .set('sessionid', user.sessionId)
-                .send({oldPassword: 'wrong-password', newPassword: '       '})
-                .end( (err, res) => {
-                    if (err) throw err;
-
-                    // check for good response
-                    assert.equal(400, res.status);
-
-                    done();
-                });
-        });
-
     });
 
     describe('PUT /users', () => {

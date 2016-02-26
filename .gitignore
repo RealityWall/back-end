@@ -31,3 +31,4 @@ coverage
 .DS_STORE
 passwords.txt
 dump.rdb
+uploads
