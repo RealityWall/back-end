@@ -19,7 +19,7 @@ module.exports = {
 
     sendVerificationMail(user, verificationToken) {
         let url = DEPLOY_BASE_URL + '/verify/' + verificationToken;
-        let subject = 'Mail de confirmation de création de compte';
+        let subject = '[Un Mur Dans Le Réel] Mail de confirmation de création de compte';
 
         let mailText = '';
         let mailHtml = '';
@@ -39,7 +39,7 @@ module.exports = {
                     .replace(/{{subject}}/g, subject);
 
                 let mailOptions = {
-                    from: 'Un mur dans le réel <' + MAILER.LOGIN + '>',
+                    from: 'Un Mur Dans Le Réel <' + MAILER.LOGIN + '>',
                     to: user.email,
                     subject: subject,
                     text: mailText,

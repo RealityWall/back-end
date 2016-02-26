@@ -17,6 +17,7 @@ module.exports = {
     'get': (req, res) => {
         delete req.User.password;
         delete req.User.dataValues.password;
+        // TODO : fetch last post
         res.status(200).json(req.User);
     },
 
@@ -230,10 +231,8 @@ module.exports = {
                 if (err) return errorHandler.internalError(res)(err);
                 if (response.statusCode !== 200) return res.status(response.statusCode).json(response.body);
 
-
                 let body = JSON.parse(response.body);
                 if (body.id != req.body.facebookId) return req.status(401).json(new Error('facebookId doesn\'t match'));
-
 
                 User
                     .findOne({
