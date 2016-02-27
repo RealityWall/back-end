@@ -225,19 +225,24 @@ module.exports = {
             .then((user) => {
                 if (user) {
                     if (user.dataValues.verified) {
-                        let verificationToken = uuid.v4();
-                        ResetPasswordToken
-                            .create({
-                                UserId: user.dataValues.id,
-                                token: verificationToken
-                            })
-                            .then( () => {
-                                res.status(201).end();
+                        if (user.dataValues.facebookId) {
+                            res.status(403).end();
+                        } else {
+                            let verificationToken = uuid.v4();
+                            ResetPasswordToken
+                                .create({
+                                    UserId: user.dataValues.id,
+                                    token: verificationToken
+                                })
+                                .then( () => {
+                                    res.status(201).end();
 
-                                // TODO : send reset link in a mail
+                                    // send reset link in a mail
+                                    mailer.sendVerificationMail(user.dataValues, verificationToken);
 
-                            })
-                            .catch(errorHandler.internalError(res));
+                                })
+                                .catch(errorHandler.internalError(res));
+                        }
                     } else {
                         res.status(401).json(new Error('You must verify your email first'));
                     }
