@@ -238,7 +238,7 @@ module.exports = {
                                     res.status(201).end();
 
                                     // send reset link in a mail
-                                    mailer.sendVerificationMail(user.dataValues, verificationToken);
+                                    mailer.sendPasswordResetLink(user.dataValues, verificationToken);
 
                                 })
                                 .catch(errorHandler.internalError(res));
