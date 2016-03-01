@@ -2,6 +2,7 @@
 
 let models = require('../../../models');
 let Post = models.Post;
+let User = models.User;
 let errorHandler = require('../../../error-handler');
 let moment = require('moment');
 
@@ -35,7 +36,10 @@ module.exports = {
                         $gt: beginQueryDate,
                         $lt: endQueryDate
                     }
-                }
+                },
+                include: [
+                    { model: User }
+                ]
             })
             .then((posts) => {
                 res.status(200).json(posts);
