@@ -62,15 +62,15 @@ db.initialize = () => {
                 return db
                     .Post
                     .bulkCreate([
-                        {WallId: 1, UserId: users[1].dataValues.id, content: 'message created at initialization of the db'},
-                        {WallId: 1, UserId: users[1].dataValues.id, content: 'message created at initialization of the db'},
-                        {WallId: 1, UserId: users[2].dataValues.id, content: 'message created at initialization of the db'},
-                        {WallId: 2, UserId: users[2].dataValues.id, content: 'message created at initialization of the db'},
-                        {WallId: 2, UserId: users[1].dataValues.id, content: 'message created at initialization of the db'},
-                        {WallId: 2, UserId: users[2].dataValues.id, content: 'message created at initialization of the db'},
-                        {WallId: 3, UserId: users[1].dataValues.id, content: 'message created at initialization of the db'},
-                        {WallId: 3, UserId: users[2].dataValues.id, content: 'message created at initialization of the db'},
-                        {WallId: 3, UserId: users[1].dataValues.id, content: 'message created at initialization of the db'}
+                        {WallId: 1, UserId: 3, content: 'message created at initialization of the db'},
+                        {WallId: 1, UserId: 3, content: 'message created at initialization of the db'},
+                        {WallId: 1, UserId: 2, content: 'message created at initialization of the db'},
+                        {WallId: 2, UserId: 2, content: 'message created at initialization of the db'},
+                        {WallId: 2, UserId: 3, content: 'message created at initialization of the db'},
+                        {WallId: 2, UserId: 2, content: 'message created at initialization of the db'},
+                        {WallId: 3, UserId: 3, content: 'message created at initialization of the db'},
+                        {WallId: 3, UserId: 2, content: 'message created at initialization of the db'},
+                        {WallId: 3, UserId: 3, content: 'message created at initialization of the db'}
                     ])
             })
             .then(resolve)
