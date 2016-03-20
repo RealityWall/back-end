@@ -1,12 +1,23 @@
 'use strict';
 
-let fs = require('fs');
-let models = require('../../../models/index');
-let request = require('request');
-let User = models.User;
-let multer = require('multer');
-let upload = multer({ dest: __dirname + '/../../../../uploads/users' }).single('avatar');
-let errorHandler = require('../../../error-handler/index');
+const fs = require('fs');
+const models = require('../../../models/index');
+const request = require('request');
+const User = models.User;
+const multer = require('multer');
+
+const acceptedMimeTypes = ['image/png', 'image/x-png', 'image/gif', 'image/jpeg', 'image/pjpeg'];
+const upload = multer({
+    dest: __dirname + '/../../../../uploads/users',
+    limits: {
+        fileSize: 2 * 1000000,
+        files: 1
+    },
+    fileFilter: (req, file, cb) => {
+        cb(null, acceptedMimeTypes.indexOf(file.mimetype) >= 0);
+    }
+}).single('avatar');
+const errorHandler = require('../../../error-handler/index');
 
 module.exports = {
 
@@ -21,10 +32,10 @@ module.exports = {
             // Everything went fine
             User
                 .update(
-                    { imagePath: req.file.filename},
-                    { where: { id: req.User.id } }
+                    {imagePath: req.file.filename},
+                    {where: {id: req.User.id}}
                 )
-                .then( () => {
+                .then(() => {
                     // delete previous imagePath
                     if (req.User.imagePath) fs.unlink(__dirname + '/../../../../uploads/users/' + req.User.imagePath);
                     res.status(201).json(req.file.filename);
@@ -37,8 +48,8 @@ module.exports = {
         if (req.User.imagePath) {
             User
                 .update(
-                    { imagePath: ''},
-                    { where: { id: req.User.id } }
+                    {imagePath: ''},
+                    {where: {id: req.User.id}}
                 )
                 .then(() => {
                     fs.unlink(__dirname + '/../../../../uploads/users/' + req.User.imagePath);
