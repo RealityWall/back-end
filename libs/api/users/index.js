@@ -122,6 +122,8 @@ module.exports = {
 
     putPassword(req, res) {
 
+        if (req.User.facebookId) return res.status(403).end();
+
         //req.sanitizeBody('oldPassword').trim();
         //req.sanitizeBody('newPassword').trim();
 

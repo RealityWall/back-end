@@ -58,7 +58,7 @@ db.initialize = () => {
                         { email: 'test2@unmurdanslereel.fr',  password, firstname: "test2", lastname: "user", verified: true, roles: ['user'] }
                     ])
             })
-            .then((users) => {
+            .then(() => {
                 return db
                     .Post
                     .bulkCreate([
