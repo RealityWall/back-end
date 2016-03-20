@@ -1,10 +1,10 @@
 'use strict';
 
-let models = require('../../../models');
-let Post = models.Post;
-let User = models.User;
-let errorHandler = require('../../../error-handler');
-let moment = require('moment');
+const models = require('../../../models');
+const Post = models.Post;
+const User = models.User;
+const errorHandler = require('../../../error-handler');
+const moment = require('moment');
 
 module.exports = {
 
@@ -38,7 +38,7 @@ module.exports = {
                     }
                 },
                 include: [
-                    { model: User }
+                    {model: User}
                 ]
             })
             .then((posts) => {
@@ -126,7 +126,6 @@ module.exports = {
                 }
             })
             .catch(errorHandler.internalError(res));
-
     }
 
 };
