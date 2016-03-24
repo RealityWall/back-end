@@ -5,7 +5,16 @@ let Wall = models.Wall;
 let Picture = models.Picture;
 let multer = require('multer');
 let moment = require('moment');
-let upload = multer({ dest: __dirname + '/../../../../uploads/walls' }).single('picture');
+const acceptedMimeTypes = ['image/png', 'image/x-png', 'image/gif', 'image/jpeg', 'image/pjpeg'];
+let upload = multer({
+    dest: __dirname + '/../../../../uploads/walls', limits: {
+        fileSize: 2 * 1000000,
+        files: 1
+    },
+    fileFilter: (req, file, cb) => {
+        cb(null, acceptedMimeTypes.indexOf(file.mimetype) >= 0);
+    }
+}).single('picture');
 let errorHandler = require('../../../error-handler/index');
 let fs = require('fs');
 
@@ -64,7 +73,7 @@ module.exports = {
                                 if (wall) {
                                     Picture
                                         .create({
-                                            imagePath : req.file.filename,
+                                            imagePath: req.file.filename,
                                             date: pictureDate,
                                             WallId: req.params.wallId
                                         })
