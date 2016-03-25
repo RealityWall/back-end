@@ -27,6 +27,7 @@ First, you have to get a constants.js file at the same level of the back-end fol
 ```
 
 Then, you have to run an PostgreSQL Server
+
 Finally just run `node index.js`
 
 ## How To Run Tests
