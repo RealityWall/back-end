@@ -33,3 +33,7 @@ Finally just run `npm install && node index.js`
 ## How To Run Tests
 
 Just run `mocha` (with PostgreSQL Server Launched)
+
+## Todo
+
+-> More test coverage
