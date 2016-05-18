@@ -258,7 +258,7 @@ module.exports = {
     facebook(req, res) {
         request.get(
             'https://graph.facebook.com/me' +
-            '?access_token=' + req.body.accessToken,
+            '?access_token=' + req.body.accessToken + '&fields=email,first_name,last_name',
             (err, response) => {
                 if (err) return errorHandler.internalError(res)(err);
                 if (response.statusCode !== 200) return res.status(response.statusCode).json(response.body);
