@@ -1,10 +1,11 @@
 'use strict';
 
-let fs        = require("fs");
-let path      = require("path");
-let Sequelize = require("sequelize");
-let POSTGRES = require('../../../constants.js').POSTGRES;
-let sequelize = new Sequelize(
+const moment = require('moment');
+const fs        = require("fs");
+const path      = require("path");
+const Sequelize = require("sequelize");
+const POSTGRES  = require('../../../constants.js').POSTGRES;
+const sequelize = new Sequelize(
     'postgres://'
     + POSTGRES.USERNAME
     + ':' + POSTGRES.PASSWORD
@@ -34,16 +35,13 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 db.initialize = () => {
+    let _data = require('../data');
     let passwordCrypt = require('../password-crypt');
     return new Promise( (resolve, reject) => {
         let walls = [];
         db
             .Wall
-            .bulkCreate([
-                {address: 'address, 06560 Valbonne', latitude: 43.700000, longitude: 7.250000},
-                {address: 'address, 06560 Valbonne', latitude: 43.6329, longitude: 6.9991},
-                {address: 'address, 06600 Antibes', latitude: 43.5833, longitude: 7.1167}
-            ])
+            .bulkCreate(_data.walls)
             .then((wallInstances) => {
                 walls = wallInstances;
                 return passwordCrypt
@@ -59,19 +57,31 @@ db.initialize = () => {
                     ])
             })
             .then(() => {
+                let posts = [];
+                for (let i = 0; i < 200; i++) {
+                    posts.push({
+                        WallId: parseInt(Math.random() * 50) + 1,
+                        UserId: parseInt(Math.random() * 2) + 2,
+                        content: 'message created at initialization of the db'
+                    })
+                }
                 return db
                     .Post
-                    .bulkCreate([
-                        {WallId: 1, UserId: 3, content: 'message created at initialization of the db'},
-                        {WallId: 1, UserId: 3, content: 'message created at initialization of the db'},
-                        {WallId: 1, UserId: 2, content: 'message created at initialization of the db'},
-                        {WallId: 2, UserId: 2, content: 'message created at initialization of the db'},
-                        {WallId: 2, UserId: 3, content: 'message created at initialization of the db'},
-                        {WallId: 2, UserId: 2, content: 'message created at initialization of the db'},
-                        {WallId: 3, UserId: 3, content: 'message created at initialization of the db'},
-                        {WallId: 3, UserId: 2, content: 'message created at initialization of the db'},
-                        {WallId: 3, UserId: 3, content: 'message created at initialization of the db'}
-                    ])
+                    .bulkCreate(posts)
+            })
+            .then(() => {
+                let pictures = [];
+                for (let i = 0; i < 400; i++) {
+                    let date = moment(new Date(2016, 4, i + 1));
+                    pictures.push({
+                        imagePath: 'wall.jpeg',
+                        date,
+                        WallId: parseInt(Math.random() * 50) + 1
+                    });
+                }
+                return db
+                    .Picture
+                    .bulkCreate(pictures)
             })
             .then(resolve)
             .catch(reject);
