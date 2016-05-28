@@ -5,15 +5,7 @@ let MAILER = config.MAILER;
 let DEPLOY_BASE_URL = config.DEPLOY_BASE_URL;
 let nodemailer = require('nodemailer');
 let fs = require('fs');
-let transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // use SSL
-    auth: {
-        user: MAILER.LOGIN,
-        pass: MAILER.PASSWORD
-    }
-});
+let transporter = nodemailer.createTransport("smtps://" + MAILER.LOGIN + ":" + MAILER.PASSWORD + "@ssl0.ovh.net");
 
 module.exports = {
 
