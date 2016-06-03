@@ -13,7 +13,7 @@ router
     .delete('/:wallId', authentication.isInRole(['admin']), wallsApi.deleteById)
     .put('/:wallId', authentication.isInRole(['admin']), wallsApi.putById)
     .post('/', authentication.isInRole(['admin']), wallsApi.post)
-    .post('/:wallId/pictures', authentication.isInRole(['admin']), wallsPicturesApi.post);
+    .post('/:wallId/pictures', authentication.isInRole(['admin', 'messenger']), wallsPicturesApi.post);
 
 router.use('/:wallId/posts', wallsPostsRouter);
 

@@ -7,6 +7,6 @@ const authentication = require('../../authentication');
 
 router
     .post('/', sessionsApi.post)
-    .delete('/', authentication.isInRole(['user', 'admin']), sessionsApi.delete);
+    .delete('/', authentication.isInRole(['user', 'admin', 'organization', 'messenger']), sessionsApi.delete);
 
 module.exports = router;

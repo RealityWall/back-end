@@ -8,14 +8,14 @@ const express = require('express');
 const router  = express.Router();
 
 router
-    .get('/', authentication.isInRole(['user', 'admin']), usersApi.get)
+    .get('/', authentication.isInRole(['user', 'admin', 'organization', 'messenger']), usersApi.get)
     .post('/', usersApi.post)
     .post('/organization', authentication.isInRole(['admin']), usersApi.postOrganization)
     .post('/messenger', authentication.isInRole(['admin']), usersApi.postMessenger)
-    .put('/', authentication.isInRole(['user', 'admin']), usersApi.put)
-    .put('/password', authentication.isInRole(['user', 'admin']), usersApi.putPassword)
-    .post('/avatar', authentication.isInRole(['user', 'admin']), usersAvatarApi.post)
-    .delete('/avatar', authentication.isInRole(['user', 'admin']), usersAvatarApi.delete)
+    .put('/', authentication.isInRole(['user', 'admin', 'organization', 'messenger']), usersApi.put)
+    .put('/password', authentication.isInRole(['user', 'admin', 'organization', 'messenger']), usersApi.putPassword)
+    .post('/avatar', authentication.isInRole(['user', 'admin', 'organization', 'messenger']), usersAvatarApi.post)
+    .delete('/avatar', authentication.isInRole(['user', 'admin', 'organization', 'messenger']), usersAvatarApi.delete)
     .post('/verify/:token', usersApi.verify)
     .post('/forgot-password', usersApi.forgotPassword)
     .delete('/reset-password/:token', resetPassword.delete)

@@ -8,7 +8,7 @@ const downloadRouter = require('./download');
 
 router
     .get('/', authentication.isInRole(['admin']), wallsPostsApi.get)
-    .post('/', authentication.isInRole(['user']), wallsPostsApi.post)
+    .post('/', authentication.isInRole(['user', 'organization']), wallsPostsApi.post)
     .put('/:postId', authentication.isInRole(['admin']), wallsPostsApi.put);
 
 router.use('/download', downloadRouter);
