@@ -6,6 +6,8 @@ const buildServer = require('./server.js');
 buildServer( (server) => {
 
     if (process.env.NODE_ENV === 'production') {
+        console.log('Express server listening on port ' + server.address().port);
+    } else {
         db
             .initialize()
             .then(() => {
@@ -15,8 +17,6 @@ buildServer( (server) => {
                 console.log('error while initializing db', err);
                 server.close();
             });
-    } else {
-        console.log('Express server listening on port ' + server.address().port);
     }
 
 });
