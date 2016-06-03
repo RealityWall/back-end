@@ -50,7 +50,7 @@ module.exports = {
     post(req, res) {
         req.sanitizeBody('content').trim();
         req.checkParams('wallId', 'wallId must be an integer').isInt();
-        req.checkBody('content', 'content must be > 10 and < 255').isLength({min: 10, max: 255});
+        req.checkBody('content', 'content must be > 1 and < 255').isLength({min: 1, max: 255});
 
         const errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);

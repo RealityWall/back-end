@@ -1,9 +1,7 @@
 'use strict';
 
 const models = require('../../models');
-const sequelize = models.sequelize;
 const Wall = models.Wall;
-const Post = models.Post;
 const Picture = models.Picture;
 const errorHandler = require('../../error-handler');
 
@@ -11,14 +9,8 @@ module.exports = {
 
     'get': (req, res) => {
         Wall
-            .findAll({
-                include: [{ model: Post }]
-            })
+            .findAll({})
             .then((walls) => {
-                walls.forEach((wall) => {
-                    wall.dataValues.PostCount = wall.dataValues.Posts.length;
-                    delete wall.dataValues.Posts;
-                });
                 res.status(200).json(walls);
             })
             .catch((err) => {
