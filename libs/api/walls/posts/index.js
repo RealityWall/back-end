@@ -14,17 +14,17 @@ module.exports = {
             req.checkQuery('date', 'date must be a date').isDate();
         }
 
-        let errors = req.validationErrors();
+        const errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
 
         // is there a date ? if no take today
-        let beginQueryDate = req.query.date ? moment(req.query.date) : moment();
+        const beginQueryDate = req.query.date ? moment(req.query.date) : moment();
         beginQueryDate.hour(1);
         beginQueryDate.minute(0);
         beginQueryDate.second(0);
         beginQueryDate.millisecond(0);
 
-        let endQueryDate = moment(beginQueryDate);
+        const endQueryDate = moment(beginQueryDate);
         endQueryDate.add(24, 'hours');
 
         Post
@@ -52,17 +52,17 @@ module.exports = {
         req.checkParams('wallId', 'wallId must be an integer').isInt();
         req.checkBody('content', 'content must be > 10 and < 255').isLength({min: 10, max: 255});
 
-        let errors = req.validationErrors();
+        const errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
 
         // is there a date ? if no take today
-        let today = moment();
+        const today = moment();
         today.hour(1);
         today.minute(0);
         today.second(0);
         today.millisecond(0);
 
-        let tommorow = moment(today);
+        const tommorow = moment(today);
         tommorow.add(24, 'hours');
 
         Post
@@ -106,7 +106,7 @@ module.exports = {
         req.checkParams('wallId', 'wallId must be an integer').isInt();
         req.checkParams('postId', 'postId must be an integer').isInt();
 
-        let errors = req.validationErrors();
+        const errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
 
         Post

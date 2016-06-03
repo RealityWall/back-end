@@ -1,25 +1,25 @@
 'use strict';
 
-module.exports = function buildServer(cb) {
-    let express = require('express');
-    let app = express();
-    let cors = require('cors');
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const expressValidator = require('express-validator');
+const router = require('./libs/router');
+const models = require("./libs/models");
+
+module.exports = (cb) => {
+
+    const app = express();
     app.use(cors());
-
-    let bodyParser = require('body-parser');
     app.use(bodyParser.json());
-    let expressValidator = require('express-validator');
     app.use(expressValidator());
-
-    let router = require('./libs/router');
     app.use('/api', router);
-
     app.use('/images', express.static('./uploads'));
 
-    var models = require("./libs/models");
-    models.sequelize.sync({force: true}).then(function () {
-        let server = app.listen(3000, function() {
+    models.sequelize.sync({force: process.env.NODE_ENV !== 'production'}).then(() => {
+        const server = app.listen(3000, () => {
             cb(server);
         });
     });
+
 };

@@ -1,11 +1,11 @@
 'use strict';
 
-let express = require('express');
-let router  = express.Router();
-let usersRouter = require('./users');
-let sessionsRouter = require('./sessions');
-let wallsRouter = require('./walls');
-let postsRouter = require('./posts');
+const express = require('express');
+const router  = express.Router();
+const usersRouter = require('./users');
+const sessionsRouter = require('./sessions');
+const wallsRouter = require('./walls');
+const postsRouter = require('./posts');
 
 router
     .use('/users', usersRouter)

@@ -1,11 +1,11 @@
 'use strict';
 
-let models = require('../../models');
-let User = models.User;
-let Session = models.Session;
-let passwordCrypt = require('../../password-crypt');
-var uuid = require('node-uuid');
-let errorHandler = require('../../error-handler');
+const models = require('../../models');
+const User = models.User;
+const Session = models.Session;
+const passwordCrypt = require('../../password-crypt');
+const uuid = require('node-uuid');
+const errorHandler = require('../../error-handler');
 
 module.exports = {
 
@@ -16,7 +16,7 @@ module.exports = {
         req.checkBody('email', 'Invalid email').notEmpty().isEmail();
         req.checkBody('password', 'Invalid password').notEmpty();
 
-        let errors = req.validationErrors();
+        const errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
 
         User
@@ -32,7 +32,7 @@ module.exports = {
                             .check(user.password, req.body.password)
                             .then( (isPasswordCorrect) => {
                                 if (isPasswordCorrect) {
-                                    let sessionId = uuid.v4();
+                                    const sessionId = uuid.v4();
                                     Session
                                         .create({
                                             UserId: user.dataValues.id,

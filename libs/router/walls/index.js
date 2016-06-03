@@ -1,11 +1,11 @@
 'use strict';
 
-let wallsApi = require('../../api/walls');
-let wallsPicturesApi = require('../../api/walls/pictures');
-let express = require('express');
-let router  = express.Router();
-let authentication = require('../../authentication');
-let wallsPostsRouter = require('./posts');
+const wallsApi = require('../../api/walls');
+const wallsPicturesApi = require('../../api/walls/pictures');
+const express = require('express');
+const router  = express.Router();
+const authentication = require('../../authentication');
+const wallsPostsRouter = require('./posts');
 
 router
     .get('/', wallsApi.get)

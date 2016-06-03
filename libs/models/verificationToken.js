@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = function(sequelize, DataTypes) {
-    let VerificationToken = sequelize.define("VerificationToken", {
+    const VerificationToken = sequelize.define("VerificationToken", {
         token: DataTypes.STRING
     }, {
         classMethods: {

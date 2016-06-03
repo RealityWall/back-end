@@ -1,8 +1,8 @@
 'use strict';
 
-let models = require('../models');
-let Session = models.Session;
-let User = models.User;
+const models = require('../models');
+const Session = models.Session;
+const User = models.User;
 
 module.exports = {
 

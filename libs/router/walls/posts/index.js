@@ -1,11 +1,10 @@
 'use strict';
 
-let wallsPostsApi = require('../../../api/walls/posts');
-let express = require('express');
-let router  = express.Router({mergeParams: true});
-let authentication = require('../../../authentication');
-
-let downloadRouter = require('./download');
+const wallsPostsApi = require('../../../api/walls/posts');
+const express = require('express');
+const router  = express.Router({mergeParams: true});
+const authentication = require('../../../authentication');
+const downloadRouter = require('./download');
 
 router
     .get('/', authentication.isInRole(['admin']), wallsPostsApi.get)

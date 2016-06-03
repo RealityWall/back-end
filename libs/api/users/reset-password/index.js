@@ -1,12 +1,12 @@
 'use strict';
 
-let models = require('../../../models/index');
-let User = models.User;
-let Session = models.Session;
-let sequelize = models.sequelize;
-let ResetPasswordToken = models.ResetPasswordToken;
-let passwordCrypt = require('../../../password-crypt/index');
-let errorHandler = require('../../../error-handler/index');
+const models = require('../../../models/index');
+const User = models.User;
+const Session = models.Session;
+const sequelize = models.sequelize;
+const ResetPasswordToken = models.ResetPasswordToken;
+const passwordCrypt = require('../../../password-crypt/index');
+const errorHandler = require('../../../error-handler/index');
 
 module.exports = {
 
@@ -17,7 +17,7 @@ module.exports = {
         req.checkParams('token', 'missing param : token').notEmpty();
         req.checkBody('password', 'missing param : password').notEmpty();
 
-        let errors = req.validationErrors();
+        const errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
 
         ResetPasswordToken
@@ -79,7 +79,7 @@ module.exports = {
 
         req.checkParams('token', 'missing param : token').notEmpty();
 
-        let errors = req.validationErrors();
+        const errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
 
         ResetPasswordToken

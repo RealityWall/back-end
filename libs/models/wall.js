@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-    let Wall = sequelize.define("Wall", {
+    const Wall = sequelize.define("Wall", {
         address: {
             type: DataTypes.STRING,
             allowNull: false

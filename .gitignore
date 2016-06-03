@@ -32,3 +32,4 @@ coverage
 passwords.txt
 dump.rdb
 uploads
+!uploads/walls/wall.jpeg

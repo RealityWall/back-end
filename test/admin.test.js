@@ -1,15 +1,15 @@
 'use strict';
 
-let assert = require('assert');
-let buildServer = require('../server.js');
-let models = require('../libs/models');
-let passwordCrypt = require('../libs/password-crypt');
-let request = require('supertest');
-let fs = require('fs');
+const assert = require('assert');
+const buildServer = require('../server.js');
+const models = require('../libs/models');
+const passwordCrypt = require('../libs/password-crypt');
+const request = require('supertest');
+const fs = require('fs');
 
 describe('Admin Route on Server API Test', () => {
 
-    let user = {
+    const user = {
         email: 'admin@reality-wall.fr',
         password: 'password',
         firstname: 'admin',
@@ -17,7 +17,7 @@ describe('Admin Route on Server API Test', () => {
     };
     let sessionId = 'sessionId';
 
-    let wall = {
+    const wall = {
         address: 'ADDRESS1 ADDRESS2 31000 TOULOUSE',
         longitude: 1.438672,
         latitude: -43.43829798

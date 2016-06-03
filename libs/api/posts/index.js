@@ -11,10 +11,10 @@ module.exports = {
 
     'get': (req, res) => {
 
-        let oldestPostId = req.query.oldestPostId;
-        let mostRecentPostId = req.query.mostRecentPostId;
+        const oldestPostId = req.query.oldestPostId;
+        const mostRecentPostId = req.query.mostRecentPostId;
 
-        let query = {
+        const query = {
             where: {
                 hidden: false
             },

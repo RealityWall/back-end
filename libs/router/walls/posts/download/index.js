@@ -1,9 +1,9 @@
 'use strict';
 
-let wallsPostsDownloadApi = require('../../../../api/walls/posts/download');
-let express = require('express');
-let router  = express.Router({mergeParams: true});
-let authentication = require('../../../../authentication');
+const wallsPostsDownloadApi = require('../../../../api/walls/posts/download');
+const express = require('express');
+const router  = express.Router({mergeParams: true});
+const authentication = require('../../../../authentication');
 
 router
     .get('/:pdfId', wallsPostsDownloadApi.get)

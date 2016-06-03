@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = function(sequelize, DataTypes) {
-    let Session = sequelize.define("Session", {
+    const Session = sequelize.define("Session", {
         sessionId: DataTypes.STRING
     }, {
         classMethods: {

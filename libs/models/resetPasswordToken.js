@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = function(sequelize, DataTypes) {
-    let ResetPasswordToken = sequelize.define("ResetPasswordToken", {
+    const ResetPasswordToken = sequelize.define("ResetPasswordToken", {
         token: DataTypes.STRING
     }, {
         classMethods: {

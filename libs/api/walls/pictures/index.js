@@ -1,12 +1,12 @@
 'use strict';
 
-let models = require('../../../models/index');
-let Wall = models.Wall;
-let Picture = models.Picture;
-let multer = require('multer');
-let moment = require('moment');
+const models = require('../../../models/index');
+const Wall = models.Wall;
+const Picture = models.Picture;
+const multer = require('multer');
+const moment = require('moment');
 const acceptedMimeTypes = ['image/png', 'image/x-png', 'image/gif', 'image/jpeg', 'image/pjpeg'];
-let upload = multer({
+const upload = multer({
     dest: __dirname + '/../../../../uploads/walls', limits: {
         fileSize: 2 * 1000000,
         files: 1
@@ -15,15 +15,15 @@ let upload = multer({
         cb(null, acceptedMimeTypes.indexOf(file.mimetype) >= 0);
     }
 }).single('picture');
-let errorHandler = require('../../../error-handler/index');
-let fs = require('fs');
+const errorHandler = require('../../../error-handler/index');
+const fs = require('fs');
 
 module.exports = {
 
     post(req, res) {
         req.checkParams('wallId', 'wallId must be an integer').isInt();
 
-        let errors = req.validationErrors();
+        const errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
 
         // upload the picture
@@ -32,13 +32,13 @@ module.exports = {
             if (!req.file.filename) return res.status(400).json(new Error('missing image'));
 
             req.checkBody('date', 'must be a date').isDate();
-            let errors = req.validationErrors();
+            const errors = req.validationErrors();
             if (errors) {
                 fs.unlink(__dirname + '/../../../../uploads/walls/' + req.file.filename);
                 return res.status(400).json(errors);
             }
 
-            let pictureDate = moment(req.body.date);
+            const pictureDate = moment(req.body.date);
             pictureDate.hour(1);
             pictureDate.minute(0);
             pictureDate.second(0);

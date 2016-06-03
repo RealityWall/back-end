@@ -1,4 +1,6 @@
-var bcrypt = require('bcryptjs');
+'use strict';
+
+const bcrypt = require('bcryptjs');
 
 module.exports = {
     /**

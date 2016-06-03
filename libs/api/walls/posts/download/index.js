@@ -20,17 +20,17 @@ module.exports = {
             req.checkQuery('date', 'date must be a date').isDate();
         }
 
-        let errors = req.validationErrors();
+        const errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
 
         // is there a date ? if no take today
-        let beginQueryDate = req.query.date ? moment(req.query.date) : moment();
+        const beginQueryDate = req.query.date ? moment(req.query.date) : moment();
         beginQueryDate.hour(1);
         beginQueryDate.minute(0);
         beginQueryDate.second(0);
         beginQueryDate.millisecond(0);
 
-        let endQueryDate = moment(beginQueryDate);
+        const endQueryDate = moment(beginQueryDate);
         endQueryDate.add(24, 'hours');
 
         Post
@@ -62,13 +62,13 @@ module.exports = {
                     }
                 }));
 
-                let assetsPath = __dirname + '/../../../../../assets';
+                const assetsPath = __dirname + '/../../../../../assets';
                 fs.readFile(assetsPath + '/pdfTemplate.css', 'utf8', (err, css) => {
                     if (err) return errorHandler.internalError(res)(err);
                     html = '<html><head><style>' + css + '</style></head><body>' + html + '</body></html>';
-                    let uniqId = uniqid();
-                    let filePath = '/tmp/pdf-' + uniqId;
-                    let destinationPath = __dirname + '/../../../../../assets/generated_pdf/' + uniqId;
+                    const uniqId = uniqid();
+                    const filePath = '/tmp/pdf-' + uniqId;
+                    const destinationPath = __dirname + '/../../../../../assets/generated_pdf/' + uniqId;
                     fs.writeFile(filePath + '.html', html, 'utf8', (err) => {
                         if (err) return errorHandler.internalError(res)(err);
                         child_process.exec(
@@ -98,7 +98,7 @@ module.exports = {
     },
 
     'get': (req, res) => {
-        let filePath = __dirname + '/../../../../../assets/generated_pdf/' + req.params.pdfId + '.pdf';
+        const filePath = __dirname + '/../../../../../assets/generated_pdf/' + req.params.pdfId + '.pdf';
         res.download(filePath, 'report.pdf', (err) => {
             if (!err) fs.unlink(filePath);
             else res.status(404).end();

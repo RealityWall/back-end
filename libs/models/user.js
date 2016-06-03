@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-    let User = sequelize.define("User", {
+    const User = sequelize.define("User", {
         email: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -39,8 +39,8 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.ARRAY(DataTypes.STRING),
             validate: {
                 correctInputs: (value) => {
-                    var options = ["user", "admin"];
-                    var valid = value.some( (v) => { return options.indexOf(v) === -1; });
+                    const options = ["user", "admin", "organization", "messenger"];
+                    const valid = value.some( (v) => { return options.indexOf(v) === -1; });
                     if (valid) {
                         throw new Error("Invalid input.");
                     } else {

@@ -1,9 +1,9 @@
 'use strict';
 
-let assert = require('assert');
-let buildServer = require('../server.js');
-let models = require('../libs/models');
-let request = require('supertest');
+const assert = require('assert');
+const buildServer = require('../server.js');
+const models = require('../libs/models');
+const request = require('supertest');
 
 describe('User Route on Server API Test', () => {
 
@@ -14,7 +14,7 @@ describe('User Route on Server API Test', () => {
         firstname: 'super',
         lastname: 'developer'
     };
-    let newPassword = 'newPassword';
+    const newPassword = 'newPassword';
 
     let userNotVerified = {
         email: 'test@test.com',
@@ -215,6 +215,44 @@ describe('User Route on Server API Test', () => {
                     // check for good response
                     assert.equal(201, res.status);
                     user.sessionId = res.body;
+
+                    done();
+                });
+        });
+
+    });
+
+    describe('POST /users/organization', () => {
+
+        it('Should not create a new user beacuse NOT AUTHORIZED #403', (done) => {
+            request(server)
+                .post('/api/users/organization')
+                .send(user)
+                .set('sessionid', user.sessionId)
+                .set('Accept', 'application/json')
+                .end( (err, res) => {
+                    // check for bad response
+                    assert.equal(403, res.status);
+
+
+                    done();
+                });
+        });
+
+    });
+
+    describe('POST /users/messenger', () => {
+
+        it('Should not create a new user beacuse NOT AUTHORIZED #403', (done) => {
+            request(server)
+                .post('/api/users/messenger')
+                .send(user)
+                .set('sessionid', user.sessionId)
+                .set('Accept', 'application/json')
+                .end( (err, res) => {
+                    // check for bad response
+                    assert.equal(403, res.status);
+
 
                     done();
                 });

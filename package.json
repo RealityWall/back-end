@@ -4,7 +4,7 @@
   "description": "back end of the reality wall app",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./test --recursive"
+    "test": "./node_modules/.bin/mocha ./test --recursive"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
     "cors": "^2.7.1",
     "express": "^4.13.3",
     "express-validator": "^2.19.0",
+    "fs": "0.0.2",
     "moment": "^2.11.2",
     "multer": "^1.1.0",
     "node-uuid": "^1.4.3",
@@ -33,7 +34,8 @@
     "uniqid": "^1.0.0"
   },
   "devDependencies": {
-    "supertest": "^1.1.0",
-    "mocha": "~2.3.3"
+    "assert": "^1.4.1",
+    "mocha": "^2.3.4",
+    "supertest": "^1.1.0"
   }
 }

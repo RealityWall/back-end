@@ -1,9 +1,9 @@
 'use strict';
 
-let models = require('../../models');
-let Wall = models.Wall;
-let Picture = models.Picture;
-let errorHandler = require('../../error-handler');
+const models = require('../../models');
+const Wall = models.Wall;
+const Picture = models.Picture;
+const errorHandler = require('../../error-handler');
 
 module.exports = {
 
@@ -24,7 +24,7 @@ module.exports = {
         req.checkBody('latitude', 'missing or wrong parameter : latitude').isFloat({min: -90, max: 90});
         req.checkBody('longitude', 'missing or wrong parameter : longitude').isFloat({min: -180, max: 180});
 
-        let errors = req.validationErrors();
+        const errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
 
         Wall
@@ -43,7 +43,7 @@ module.exports = {
 
         req.checkParams('wallId', 'wallId must be an integer').isInt();
 
-        let errors = req.validationErrors();
+        const errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
 
         Wall
@@ -69,7 +69,7 @@ module.exports = {
 
         req.checkParams('wallId', 'wallId must be an integer').isInt();
 
-        let errors = req.validationErrors();
+        const errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
 
         Wall
@@ -92,7 +92,7 @@ module.exports = {
 
         req.checkParams('wallId', 'wallId must be an integer').isInt();
 
-        let updateQuery = {};
+        const updateQuery = {};
 
         if (req.body.address) {
             req.sanitizeBody('address').trim();
@@ -112,7 +112,7 @@ module.exports = {
             return res.status(200).end();
         }
 
-        let errors = req.validationErrors();
+        const errors = req.validationErrors();
         if (errors) return res.status(400).json(errors);
 
         Wall

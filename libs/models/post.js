@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-    let Post = sequelize.define("Post", {
+    const Post = sequelize.define("Post", {
         content: {
             type: DataTypes.TEXT,
             allowNull: false

@@ -5,6 +5,8 @@ const fs        = require("fs");
 const path      = require("path");
 const Sequelize = require("sequelize");
 const POSTGRES  = require('../../../constants.js').POSTGRES;
+const _data = require('../data');
+const passwordCrypt = require('../password-crypt');
 const sequelize = new Sequelize(
     'postgres://'
     + POSTGRES.USERNAME
@@ -13,7 +15,7 @@ const sequelize = new Sequelize(
     + '/realitywall',
     {logging: false}
 );
-let db        = {};
+const db        = {};
 
 fs
     .readdirSync(__dirname)
@@ -21,7 +23,7 @@ fs
         return (file.indexOf(".") !== 0) && (file !== "index.js");
     })
     .forEach(function(file) {
-        let model = sequelize.import(path.join(__dirname, file));
+        const model = sequelize.import(path.join(__dirname, file));
         db[model.name] = model;
     });
 
@@ -35,8 +37,6 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 db.initialize = () => {
-    let _data = require('../data');
-    let passwordCrypt = require('../password-crypt');
     return new Promise( (resolve, reject) => {
         let walls = [];
         db
@@ -57,7 +57,7 @@ db.initialize = () => {
                     ])
             })
             .then(() => {
-                let posts = [];
+                const posts = [];
                 for (let i = 0; i < 200; i++) {
                     posts.push({
                         WallId: parseInt(Math.random() * 50) + 1,
@@ -70,9 +70,9 @@ db.initialize = () => {
                     .bulkCreate(posts)
             })
             .then(() => {
-                let pictures = [];
+                const pictures = [];
                 for (let i = 0; i < 400; i++) {
-                    let date = moment(new Date(2016, 4, i + 1));
+                    const date = moment(new Date(2016, 4, i + 1));
                     pictures.push({
                         imagePath: 'wall.jpeg',
                         date,

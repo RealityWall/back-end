@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-    let Picture = sequelize.define("Picture", {
+    const Picture = sequelize.define("Picture", {
         imagePath: {
             type: DataTypes.STRING,
             allowNull: false

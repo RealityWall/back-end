@@ -1,8 +1,8 @@
 'use strict';
 
-let assert = require('assert');
-let models = require('../libs/models');
-let authentication = require('../libs/authentication');
+const assert = require('assert');
+const models = require('../libs/models');
+const authentication = require('../libs/authentication');
 
 describe('Authentication Test', () => {
 
@@ -23,7 +23,7 @@ describe('Authentication Test', () => {
             .create(user)
             .then( (createdInstance) => {
 
-                let password = user.password;
+                const password = user.password;
                 user = createdInstance;
                 user.password = password;
 
@@ -54,8 +54,8 @@ describe('Authentication Test', () => {
     });
 
     it('Should authenticate the user', (done) => {
-        let req = {headers: {sessionid: sessionId}};
-        let res = {
+        const req = {headers: {sessionid: sessionId}};
+        const res = {
             status: () => { return res; },
             end: () => {},
             json: () => {}
@@ -66,8 +66,8 @@ describe('Authentication Test', () => {
     });
 
     it('Should NOT authenticate the user because sessionId not exist', (done) => {
-        let req = {headers: {sessionid: 'coucou'}};
-        let res = {
+        const req = {headers: {sessionid: 'coucou'}};
+        const res = {
             status: (statusCode) => {
                 assert.equal(401, statusCode);
                 return res;
@@ -79,8 +79,8 @@ describe('Authentication Test', () => {
     });
 
     it('Should NOT authenticate the user because no UserRole Matched', (done) => {
-        let req = {headers: {sessionid: sessionId}};
-        let res = {
+        const req = {headers: {sessionid: sessionId}};
+        const res = {
             status: (statusCode) => {
                 assert.equal(403, statusCode);
                 return res;
@@ -92,8 +92,8 @@ describe('Authentication Test', () => {
     });
 
     it ('Should NOT authenticate the user because no headers.sessionid given', (done) => {
-        let req = {headers: {}};
-        let res = {
+        const req = {headers: {}};
+        const res = {
             status: (statusCode) => {
                 assert.equal(400, statusCode);
                 return res;
