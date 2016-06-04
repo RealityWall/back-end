@@ -125,6 +125,7 @@ module.exports = {
                     })
                     .then((createdInstance) => {
                         res.status(201).json(createdInstance);
+                        createdInstance.dataValues.password = password;
                         mailer.sendCreatedMail(createdInstance.dataValues, 'organization');
                     })
                     .catch(errorHandler.internalErrorOrUniqueConstraint(res));

@@ -74,13 +74,33 @@ module.exports = {
     },
 
     sendCreatedMail(user, type) {
-        // TODO
-        console.info('TODO');
-        if (type === 'organization') {
+        const subject = '[Un Mur Dans Le Réel] Création de votre compte';
+        fs.readFile(__dirname + '/assets/account-created/index.txt', 'utf8', (err, data) => {
+            if (err) return err;
+            const mailText = data
+                .replace(/{{firstname}}/g, user.firstname)
+                .replace(/{{lastname}}/g, user.lastname)
+                .replace(/{{password}}/g, user.password);
 
-        } else if (type === 'member') {
+            fs.readFile(__dirname + '/assets/account-created/index.html', 'utf8', (err, data) => {
+                if (err) return err;
+                const mailHtml = data
+                    .replace(/{{firstname}}/g, user.firstname)
+                    .replace(/{{lastname}}/g, user.lastname)
+                    .replace(/{{password}}/g, user.password)
+                    .replace(/{{subject}}/g, subject);
 
-        }
+                const mailOptions = {
+                    from: 'Un Mur Dans Le Réel <' + MAILER.LOGIN + '>',
+                    to: user.email,
+                    subject: subject,
+                    text: mailText,
+                    html: mailHtml
+                };
+
+                transporter.sendMail(mailOptions, function() {});
+            });
+        });
     }
 
 };

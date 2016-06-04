@@ -1,0 +1,7 @@
+Bonjour {{firstname}} {{lastname}},
+
+Nous venons de créer un compte pour vous sur notre plate-forme unmurdanslereel.fr !
+Voici votre mot de passe : {{password}}
+Veuillez le changer le rapidement possible :)
+
+Toute l'équipe d'Un Mur Dans Le Réel vous souhaite la bienvenue et vous remercie pour l'intérêt que vous portez à notre plate-forme !
