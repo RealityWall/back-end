@@ -53,7 +53,10 @@ db.initialize = () => {
                     .bulkCreate([
                         { email: 'admin@unmurdanslereel.fr',  password, firstname: "admin", lastname: "admin", verified: true, roles: ['admin'] },
                         { email: 'test1@unmurdanslereel.fr',  password, firstname: "test1", lastname: "user", verified: true, roles: ['user'] },
-                        { email: 'test2@unmurdanslereel.fr',  password, firstname: "test2", lastname: "user", verified: true, roles: ['user'] }
+                        { email: 'test2@unmurdanslereel.fr',  password, firstname: "test2", lastname: "user", verified: true, roles: ['user'] },
+                        { email: 'organization@unmurdanslereel.fr',  password, firstname: "Green Peace", lastname: "(Association)", verified: true, roles: ['organization'] },
+                        { email: 'messenger@unmurdanslereel.fr',  password, firstname: "Un", lastname: "Messager", verified: true, roles: ['messenger'] }
+
                     ])
             })
             .then(() => {
