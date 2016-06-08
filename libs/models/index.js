@@ -56,16 +56,18 @@ db.initialize = () => {
                         { email: 'test2@unmurdanslereel.fr',  password, firstname: "test2", lastname: "user", verified: true, roles: ['user'] },
                         { email: 'organization@unmurdanslereel.fr',  password, firstname: "Green Peace", lastname: "(Association)", verified: true, roles: ['organization'] },
                         { email: 'messenger@unmurdanslereel.fr',  password, firstname: "Un", lastname: "Messager", verified: true, roles: ['messenger'] }
-
                     ])
             })
             .then(() => {
                 const posts = [];
+                const date = moment();
+                date.date(date.date() - 1);
                 for (let i = 0; i < 200; i++) {
                     posts.push({
                         WallId: parseInt(Math.random() * 50) + 1,
                         UserId: parseInt(Math.random() * 2) + 2,
-                        content: 'message created at initialization of the db'
+                        content: 'message created at initialization of the db',
+                        createdAt: i % 2 === 0 ? date : moment()
                     })
                 }
                 return db
