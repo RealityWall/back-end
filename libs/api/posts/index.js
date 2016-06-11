@@ -88,7 +88,7 @@ module.exports = {
                                 },
                                 message: post.content
                             }
-                        }));
+                        }), wall);
                     })
                     .reduce((previousValue, currentValue) => {
                         return previousValue + currentValue;

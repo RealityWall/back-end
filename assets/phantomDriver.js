@@ -5,9 +5,9 @@ var fs = require('fs');
 var filePath = system.args[1];
 var html = fs.read( filePath );
 
-page.content = html,
+page.content = html;
 page.paperSize = {
-    format: 'A3',
+    format: 'A4',
     margin: '1cm',
     orientation: 'landscape'
 };

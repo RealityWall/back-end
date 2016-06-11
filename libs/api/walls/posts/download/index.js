@@ -6,6 +6,7 @@ const fs = require('fs');
 const uniqid = require('uniqid');
 const models = require('../../../../models');
 const Post = models.Post;
+const Wall = models.Wall;
 const User = models.User;
 const htmlGenerator = require('../../../../../assets/pdfTemplate.js');
 const Constants = require('../../../../../../constants.js');
@@ -33,19 +34,33 @@ module.exports = {
         const endQueryDate = moment(beginQueryDate);
         endQueryDate.add(24, 'hours');
 
-        Post
-            .findAll({
+        let wall = null;
+        Wall
+            .findOne({
                 where: {
-                    WallId: req.params.wallId,
-                    hidden: false,
-                    createdAt: {
-                        $gt: beginQueryDate,
-                        $lt: endQueryDate
-                    }
-                },
-                include: [
-                    {model: User}
-                ]
+                    id: req.params.wallId
+                }
+            })
+            .then((_wall) => {
+                if (!_wall) {
+                    res.status(404).end();
+                } else {
+                    wall = _wall;
+                    return Post
+                        .findAll({
+                            where: {
+                                WallId: req.params.wallId,
+                                hidden: false,
+                                createdAt: {
+                                    $gt: beginQueryDate,
+                                    $lt: endQueryDate
+                                }
+                            },
+                            include: [
+                                {model: User}
+                            ]
+                        });
+                }
             })
             .then((posts) => {
                 let html = htmlGenerator(req.params.wallId, posts.map((post) => {
@@ -60,7 +75,7 @@ module.exports = {
                         },
                         message: post.content
                     }
-                }));
+                }), wall);
 
                 const assetsPath = __dirname + '/../../../../../assets';
                 fs.readFile(assetsPath + '/pdfTemplate.css', 'utf8', (err, css) => {

@@ -14,25 +14,37 @@ const querystring = require("querystring");
 function _generateSinglePostTemplate(wallId, author, message) {
     return `
         <div id="wrapper">
-            <table>
-                <tr><td>
-                    <div class="profile-image" style="background-image: url(` + author.imagePath + `);"></div>
-                    <div class="user-name">` + author.name + `</div>
-                </td></tr>
+            <div class="logo">
+                <img src="http://unmurdanslereel.fr/img/logo_black_and_white.png" alt="">
+            </div>
+            <table class="text-container">
+                <tr>
+                    <td class="text">
+                        ${message}
+                    </td>
+                </tr>
             </table>
-            <table>
-                <tr><td class="body">
-                    ` + message + `
-                </td></tr>
-            </table>
-            <table>
-                <tr><td>
-                    <div class="footer">Reality Wall</div>
-                    <div class="qr-code">
-                        <img src="http://api.qrserver.com/v1/create-qr-code/?` + querystring.stringify({data: Constants.DEPLOY_BASE_URL + `/walls/` + wallId}) + `&size=80x80" alt=""/>
+        
+            <div class="author">
+                ${author.name}
+            </div>
+            <div class="footer">
+                <div class="social">
+                    <div class="item">
+                        <img src="http://vectorlogofree.com/wp-content/uploads/2014/09/49665-facebook-logo-icon-vector-icon-vector-eps.png"
+                             height="40">
+                        <div class="text">/unmurdanslereel</div>
                     </div>
-                </td></tr>
-            </table>
+                    <div class="item">
+                        <img src="http://vectorlogofree.com/wp-content/uploads/2014/06/50920-twitter-logo-bird-shape-in-a-square-icon-vector-icon-vector-eps.png"
+                             height="40">
+                        <div class="text">/unmurdanslereel</div>
+                    </div>
+                </div>
+                <div class="qr-code">
+                    <img src="http://api.qrserver.com/v1/create-qr-code/?` + querystring.stringify({data: Constants.DEPLOY_BASE_URL + `/walls/` + wallId}) + `&size=120x120" alt=""/>
+                </div>
+            </div>
         </div>
     `;
 };
@@ -44,11 +56,30 @@ function _generateSinglePostTemplate(wallId, author, message) {
  * @param posts posts list format : {author: {name, imagePath}, message}
  * @returns {*}
  */
-module.exports = function (wallId, posts) {
-    if (posts.length == 0) return "<div>No Posts on this wall</div>";
-    else {
-        return posts.map((post) => {
+module.exports = function (wallId, posts, wall) {
+    if (posts.length == 0) {
+        let result = '';
+        if (wall) {
+            result += `
+                <table style="height:100%;width: 100%; text-align:center;">
+                    <tr style="height:100%;"><td style="height:100%;vertical-align:middle;font-size:32px;">Mur : ${wall.address}</td></tr>
+                </table> 
+            `;
+        }
+        return result + "<div>No Posts on this wall</div>";
+    } else {
+        let result = '';
+        if (wall) {
+            result += `
+                <table style="height:100%;width: 100%; text-align:center;">
+                    <tr style="height:100%;"><td style="height:100%;vertical-align:middle;font-size:32px;">Mur : ${wall.address}</td></tr>
+                </table> 
+            `;
+        }
+        return result + posts.map((post) => {
             return _generateSinglePostTemplate(wallId, post.author, post.message);
+        }).reduce((previous, current) => {
+            return previous + '' + current;
         });
     }
 };
