@@ -8,6 +8,6 @@ const authentication = require('../../authentication');
 router
     .get('/', postsApi.get)
     .get('/download/:pdfId', postsApi.getDownload)
-    .post('/download', authentication.isInRole(['admin']), postsApi.postDownload);
+    .post('/download', authentication.isInRole(['admin', 'messenger']), postsApi.postDownload);
 
 module.exports = router;
