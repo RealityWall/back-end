@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: false
         },
-        hidden: {
+        hasBeenDisplayed: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false
@@ -14,12 +14,6 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         classMethods: {
             associate: (models) => {
-                Post.belongsTo(models.Wall, {
-                    onDelete: "CASCADE",
-                    foreignKey: {
-                        allowNull: false
-                    }
-                });
                 Post.belongsTo(models.User, {
                     onDelete: "SET NULL",
                     foreignKey: {

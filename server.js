@@ -16,7 +16,7 @@ module.exports = (cb) => {
     app.use('/api', router);
     app.use('/images', express.static('./uploads'));
 
-    models.sequelize.sync({force: process.env.NODE_ENV !== 'production'}).then(() => {
+    models.sequelize.sync({/*force: process.env.NODE_ENV !== 'production'*/}).then(() => {
         const server = app.listen(3000, () => {
             cb(server);
         });

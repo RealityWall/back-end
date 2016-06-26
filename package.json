@@ -27,7 +27,7 @@
     "multer": "^1.1.0",
     "node-uuid": "^1.4.3",
     "nodemailer": "^2.1.0",
-    "nodepdf": "^1.2.1",
+    "path": "^0.12.7",
     "pg": "^4.4.4",
     "request": "^2.69.0",
     "sequelize": "^3.18.0",

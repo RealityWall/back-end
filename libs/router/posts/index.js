@@ -6,8 +6,6 @@ const router  = express.Router();
 const authentication = require('../../authentication');
 
 router
-    .get('/', postsApi.get)
-    .get('/download/:pdfId', postsApi.getDownload)
-    .post('/download', authentication.isInRole(['admin', 'messenger']), postsApi.postDownload);
+    .post('/', authentication.isInRole(['user']), postsApi.post);
 
 module.exports = router;

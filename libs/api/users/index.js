@@ -21,18 +21,15 @@ module.exports = {
         delete req.User.password;
         delete req.User.dataValues.password;
 
-        const queryDate = moment();
-        queryDate.hour(1);
-        queryDate.minute(0);
-        queryDate.second(0);
-        queryDate.millisecond(0);
+        const releaseDate = moment(new Date(2016, 6, 14, 0, 0, 0, 0));
 
         Post
             .findOne({
                 where: {
                     UserId: req.User.id,
+                    hasBeenDisplayed: false,
                     createdAt: {
-                        $gt: queryDate
+                        $lt: releaseDate
                     }
                 },
                 order: '"createdAt" DESC'
