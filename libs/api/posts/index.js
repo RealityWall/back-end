@@ -4,6 +4,8 @@ const models = require('../../models');
 const Post = models.Post;
 const errorHandler = require('../../error-handler');
 const moment = require('moment');
+const request = require('request');
+const SLACK_HOOK = require('../../../../constants').SLACK_HOOK;
 
 module.exports = {
 
@@ -42,8 +44,22 @@ module.exports = {
                             UserId: req.User.id
                         })
                         .then((createdInstance) => {
-                            // TODO : POST slack
                             res.status(201).json(createdInstance);
+                            request({
+                                url: SLACK_HOOK,
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                json: true,
+                                body: {
+                                    text: '"' + req.body.content + '" - ' + req.User.firstname + ' ' + req.User.lastname
+                                }
+                            }, function (err) {
+                                if (err) {
+                                    console.log(new Date(), 'Error while posting message to slack', err);
+                                }
+                            })
                         })
                         .catch((error) => {
                             if (error.name == 'SequelizeForeignKeyConstraintError') return res.status(404).end();
