@@ -17,22 +17,25 @@ module.exports = {
         if (errors) return res.status(400).json(errors);
 
         const today = moment();
-        today.hour(1);
+        today.hour(0);
         today.minute(0);
         today.second(0);
-        today.millisecond(0);
+        today.millisecond(1);
 
-        const releaseDate = moment(new Date(2016, 6, 14, 0, 0, 0, 0));
+        const tommorow = moment(today);
+        tommorow.add(24, 'hours');
 
         Post
             .findOne({
                 where: {
                     UserId: req.User.id,
-                    hasBeenDisplayed: false,
                     createdAt: {
-                        $lt: releaseDate
+                        $gt: today,
+                        $lt: tommorow
                     }
-                }
+                },
+                limit: 1,
+                order: '"createdAt" DESC'
             })
             .then((postInstance) => {
                 if (postInstance) {
