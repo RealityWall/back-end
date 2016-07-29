@@ -36,7 +36,6 @@ db.Sequelize = Sequelize;
 
 db.initialize = () => {
     return Promise.resolve();
-
 };
 
 module.exports = db;

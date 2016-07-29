@@ -21,18 +21,14 @@ module.exports = {
         delete req.User.password;
         delete req.User.dataValues.password;
 
-        const releaseDate = moment(new Date(2016, 6, 14, 0, 0, 0, 0));
-
         Post
             .findOne({
                 where: {
                     UserId: req.User.id,
                     hasBeenDisplayed: false,
-                    createdAt: {
-                        $lt: releaseDate
-                    }
                 },
-                order: '"createdAt" DESC'
+                order: '"createdAt" DESC',
+                limit: 1
             })
             .then((lastPostInstance) => {
                 req.User.dataValues.lastPost = lastPostInstance;
